@@ -251,5 +251,179 @@ p > span {
 
 区别：优雅降级是从复杂的现状开始，并试图减少用户体验的供给，而渐进增强则是从一个非常基础的、能够起作用的版本开始，并不断扩充，以适应未来环境的需要。
 
+### 6.BFC（块级格式化上下文）
+
+如何创建BFC
+1、float的值不是none。
+2、position的值不是static或者relative。
+3、display的值是inline-block、table-cell、flex、table-caption或者inline-flex
+4、overflow的值不是visible
+
+### 7.vh vw rem px
+
+vh:相当于视口的高度，视口被均分为100单位的vh
+
+```js
+font-size:8vh;//如果视口的高度是200mm，那么上述代码中h1元素的字号将为16mm，即(8x200)/100
+```
+
+vm:相对于视口的宽度，视口被均分为100单位的vw
+
+```js
+font-size:8vw;//如果视口的高度是200mm，那么上述代码中h1元素的字号将为16mm，即(8x200)/100
+```
+
+rem：相对长度单位，相对于根元素(即html元素)[font-size](https://www.html.cn/book/css/properties/font/font-size.htm)计算值的倍数
+
+```css
+html{
+	font-size:12px;
+}
+h1{
+	font-size:2rem;//表示24px
+}
+```
+
+px：像素
+
+### 7.CSS可继承元素
+
+颜色，文字，字体间距行高对齐方式，和列表的样式可以继承。 
+
+所有元素可继承：visibility和cursor。 
+
+内联元素可继承：letter-spacing、word-spacing、white-space、line-height、color、font、font-family、font-size、font-style、font-variant、font-weight、text-decoration、text-transform、direction。 
+
+终端块状元素可继承：text-indent和text-align。 
+
+列表元素可继承：list-style、list-style-type、list-style-position、list-style-image。
+
+### 8.行内(inline)元素 设置margin-top和margin-bottom 是否起作用?
+
+不起作用
+
+### 9.对内联元素设置padding-top和padding-bottom是否会增加它的高度?
+
+不会
+
+### 10.设置p的font-size:10rem，当用户重置或拖曳浏览器窗口时，文本大小是否会也随着变化?
+
+rem是以html根元素中font-size的大小为基准的相对度量单位，文本的大小不会随着窗口的大小改变而改变。
+
 # CSS3知识点
+
+### 1.画一条0.5px的线
+
+（1）采用meta viewport的方式
+
+```xml
+<meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5"/>
+```
+
+这样子就能缩放到原来的0.5倍，如果是1px那么就会变成0.5px
+
+要记得viewport只针对于移动端，只在移动端上才能看到效果
+
+（2）采用transform: scale()的方式，在垂直方向缩小0.5
+
+```css
+transform: scale(0.5);
+transform-origin: 50% 100%; // 要指定origin值, 要不然会模糊
+```
+
+### 2.哪些是CSS3新出来的
+
+（1）边框：border-radius、border-shadow、border-image
+
+（2）渐变：Gradients、
+
+（3）2D、3D：transform
+
+（4）多媒体查询：
+
+```xml
+1.@media screen and (max-width: 699px) and (min-width: 520px)
+2.<link rel="stylesheet" media="mediatype and|not|only (expressions)" href="print.css">
+```
+
+（5）CSS3弹性盒子
+
+```css
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    width: 400px;
+    height: 250px;
+    background-color: lightgrey;
+}
+ 
+.flex-item {
+    background-color: cornflowerblue;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+}
+<div class="flex-container">
+  <div class="flex-item">flex item 1</div>
+  <div class="flex-item">flex item 2</div>
+  <div class="flex-item">flex item 3</div> 
+</div>
+```
+
+### 2.Flex布局
+
+https://juejin.im/post/6844903574929932301#heading-64
+
+### 3.**css三种动画**
+
+（1）`transition`实现渐变动画
+
+```css
+transition: all 2s ease-in 500ms;
+/*property:填写需要变化的css属性
+duration:完成过渡效果需要的时间单位(s或者ms)
+timing-function:完成效果的速度曲线（linear,ease,ease-in,ease-out等等）
+delay:延迟*/
+```
+
+（2）transform`转变动画`:2D和3D
+
+```css
+transform:scale(0.8, 1.5) rotate(35deg) skew(5deg) translate(15px, 25px);
+/*rotate(angle)，2D 旋转，*/
+rotate(x,y,z,angle)，3D旋转
+/*缩放(scale) 分为2D和3D x,y,z是收缩比例
+倾斜(skew)：主要用于对元素的样式倾斜
+移动(translate)：主要用于将元素移动*/
+```
+
+（3）`animation`实现自定义动画，
+
+```css
+&：hover{
+		animation-name: bounce;
+         animation-duration: 3s;
+         animation-iteration-count: infinite;
+     }
+ }
+@keyframes bounce{
+     0% {
+         top: 0px;
+    }
+     50% {
+         top: 249px;
+         width: 130px;
+         height: 70px;
+    }
+     100% {
+         top: 0px;
+    }
+}
+/*name：需要绑定到选择器的keyframe名称。
+duration：完成该动画需要花费的时间，秒或毫秒。
+timing-function：跟transition-linear一样。
+delay：设置动画在开始之前的延迟。
+iteration-count：设置动画执行的次数，infinite为无限次循环。
+direction：是否轮询反向播放动画。normal，默认值，动画应该正常播放；alternate，动画应该轮流反向播放。*/
+```
 
