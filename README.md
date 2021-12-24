@@ -18,6 +18,8 @@
 
 2.[柯里化Curry](./函数式编程/柯里化curry.md)
 
+3.[函数式反应型编程](./FRP/函数式反应型编程.md)
+
 ## HTML、CSS、JavaScript学习内容
 
 1.[es6知识点集合](./HTML、CSS、JS学习笔记/es6.md)
