@@ -36,21 +36,21 @@ v-if 适用于不需要频繁切换条件的场景时；v-show 适用于非常�
 
 - 切换慢，如果网络卡顿，在页面之间来回切换，就会有明显的卡顿
 
-### 5、computed 和 watch 的区别和运用的场景？
+### 3、computed 和 watch 的区别和运用的场景？
 
 **computed：** 是计算属性，依赖其它属性值，并且 computed 的值有**缓存**，只有它依赖的属性值发生改变，下一次获取 computed 的值时才会重新计算 computed  的值
 
 computed是在HTML DOM加载后马上执行的，
 
-**watch：** 「观察」
+**watch：**「观察」
 
 某些数据的监听回调 ，每当监听的数据变化时都会执行回调进行后续操作（数据变化时执行异步或开销较大的操作）
 
-**methods:**而methods则必须要有一定的触发条件才能执行，如点击事件
+**methods：**而methods则必须要有一定的触发条件才能执行，如点击事件
 
 默认加载的时候先computed再watch，不执行methods；等触发某一事件后，则是：先methods再watch。
 
-### 7、Vue 生命周期？
+### 4、Vue 生命周期？
 
 Vue 实例有一个完整的生命周期，也就是从开始**创建、初始化数据、编译模版、挂载 Dom -> 渲染、更新 -> 渲染、卸载**等一系列过程，我们称这是 Vue 的生命周期
 
@@ -71,9 +71,9 @@ Vue 实例有一个完整的生命周期，也就是从开始**创建、初始�
 
 **生命周期示意图**
 
-<img src="https://user-gold-cdn.xitu.io/2019/8/19/16ca74f183827f46?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="1.png" style="zoom:100%;" />
+<img src="images/lifecycle.png" alt="lifecycle" style="zoom:40%;" />
 
-### 8.Vue 的父组件和子组件生命周期钩子函数执行顺序？
+### 5.Vue 的父组件和子组件生命周期钩子函数执行顺序？
 
 Vue 的父组件和子组件生命周期钩子函数执行顺序可以归类为以下 4 部分：
 
@@ -93,7 +93,7 @@ Vue 的父组件和子组件生命周期钩子函数执行顺序可以归类为�
 
   父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
 
-### 9、在哪个生命周期内调用异步请求？
+### 6、在哪个生命周期内调用异步请求？
 
 可以在钩子函数 **created、beforeMount、mounted** 中进行调用，
 
@@ -104,47 +104,178 @@ Vue 的父组件和子组件生命周期钩子函数执行顺序可以归类为�
 - 能更快获取到服务端数据，减少页面 loading 时间；
 - ssr 不支持 beforeMount 、mounted 钩子函数，所以放在 created 中有助于一致性；
 
-### 10、在什么阶段才能访问操作DOM？
+### 7、在什么阶段才能访问操作DOM？
 
 mounted中就可以，已经挂载了
 
-### 11、谈谈你对 keep-alive 的了解？  
+### 8、谈谈你对 keep-alive 的了解？
 
-是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染 
+是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染，对于不活动的组件实例，进行缓存而不是销毁，和transition相似
 
-### 12、组件中 data 为什么是一个函数？
+是一个抽象组件，且在页面渲染完成之后不会被渲染成一个DOM元素
+
+```vue
+<keep-alive>
+	<router-view/>// 缓存所有页面
+</keep-alive>
+
+<keep-alive include = "test">// 缓存name为test的页面 也可以:include ="/a|b/"使用正则
+	<router-view/>
+</keep-alive>
+
+<keep-alive exclude = "test">// 不缓存name为test的页面
+	<router-view/>
+</keep-alive>
+// 或者直接在路由上写
+{
+path:"/",
+name:"hello",
+components:Home,
+meta:{
+	keepAlive: true //
+}
+}
+```
+
+只有组件被keep-alive包裹时，actived和deactived两个生命周期才会被调用，正常组件不会被调用
+
+存在问题：如果是需要及时渲染的页面，在你获取请求之后，keep-alive组件是不会立即渲染的
+
+### 9、组件中 data 为什么是一个函数？
 
 组件中的 data 必须是一个函数，然后 return 一个对象，而 new Vue 实例里，data 可以直接是一个对象
 
-![image-20200520222300529](D:\code\jsWorkSpace\notes\Interview\vue.assets\image-20200520222300529.png)
+![image-20200520222300529](images/image-20200520222300529.png)
 
-组件拿来复用的，在js对象里面是引用关系，如果组件中data是一个对象，那么这样作用域没有隔离，子组件中的data属性值会相互影响
+组件拿来复用的，一个组件被创建好之后，可以用在任何地方，
+
+在js对象里面是引用关系，如果组件中data是一个对象，那么这样作用域没有隔离，子组件中的data属性值会相互影响
 
 组件中 data 选项是一个函数，那么每个实例可以维护一份被返回对象的独立的拷贝，组件实例之间的 data 属性值不会互相影响
 
 new Vue 的实例，是不会被复用的，因此不存在引用对象的问题。
 
-### 13、v-model 的原理？
+### 10、Vue 组件间常用通信有哪几种方式？
 
-用于双向数据绑定
+[学习地址](https://github.com/niuniunn/notes/blob/main/vue%E7%BB%84%E4%BB%B6%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F/%E7%BB%84%E4%BB%B6%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F.md)
 
-### 15、Vue 组件间通信有哪几种方式？
+#### **父子组件传值：**
 
-**（1）`props / $emit` 适用 父子组件通信**
+##### （1）`props / $emit`
 
-**（2）`ref` 与 `$parent / $children` 适用 父子组件通信**
+```vue
+//父组件
+<component
+    :title="title"//父传子
+    @changeTitle="changeTitle"
+/>
+//子组件
+ props: {
+     title: {
+        type: String,
+        required: true
+     }
+  },
+methods里面使用:
+this.$emit("changeTitle", "我变了");//子组件通过emit去触发事件，父组件使用
+```
 
-- `ref`：如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素；如果用在子组件上，引用就指向组件实例
-- `$parent` / `$children`：访问父 / 子实例
+##### （2）`ref`
 
-**（3）Vuex  适用于 父子、隔代、兄弟组件通信**
+`ref`：如果在普通的 DOM 元素上使用，引用指向的就是 DOM 元素；如果用在子组件上，引用就指向组件实例
+
+```js
+ <comp1 ref="comp1"/>
+ // 使用
+ this.$refs.comp1.msg;//直接调用组件方法
+```
+
+##### （3）`$parent / $children` /`$root`
+
+```js
+直接使用
+this.$parent.方法;// $parent则是当前实例的父实例
+this.$children.方法;// $children是当前实例的直接子组件,不保证顺序，数组顺序不一定是子组件在该父组件中的渲染顺序，也不是响应式的
+this.$root.方法;// $root是当前组件树的根 Vue 实例。如果当前实例没有父实例，此实例将会是其自己。通过this.$root来访问。
+```
+
+最好不用，不友好，特别是`$children`不保证顺序
+
+##### （4）`provide/inject`
+
+一起使用，`provide`在父组件中将子组件要使用的数据抛出，然后在子组件中`inject`注入要使用的数据
+
+不需要层层声明，只需要在需要的地方进行使用就可以
+
+```js
+// 父组件里面
+// 对于方法
+provide() {
+    return {
+        btnHandleAuth: this.btnHandleAuth(),
+        btnDelAuth: this.btnDelAuth()	
+    };
+},
+// 子组件里面
+inject: ['btnHandleAuth', 'btnDelAuth'],//然后直接使用
+
+//对于变量
+// 父组件
+provide: {
+    mag:"xxxx"
+}
+    
+// 子组件
+ inject: ["msg"],
+//使用 像data里面的数据一样this调用
+ console.log(this.msg);
+```
+
+#### **非父子组件传值：**
+
+##### （1）中央事件总线 bus：适用于跨级或兄弟组件间通信。
+
+使用中央事件总线实际就是创建一个vue实例，利用这个vue实例来传递消息。
+
+```js
+使用方式一：
+// 定义一个bus文件
+import Vue from "vue";
+const bus = new Vue();
+export default bus;
+// 引入bus文件
+import bus from "@/bus";
+bus.$emit("myEvent", "bus msg")
+// 引入bus文件
+import bus from "@/bus";
+bus.$on("myEvent", data => {
+    console.log(data);
+});
+
+使用方法二：
+// main.js
+import Vue from 'vue'
+import App from './App.vue'
+Vue.prototype.$bus = new Vue();
+new Vue({
+  render: h => h(App),
+}).$mount('#app')
+// 发送事件
+this.$bus.$emit("myEvent", "bus msg")；
+// 接收事件
+this.$bus.$on("myEvent", data => {
+    console.log(data);
+})
+```
+
+##### **（2）Vuex  适用于 父子、隔代、兄弟组件通信**
 
 Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。每一个 Vuex 应用的核心就是 store（仓库）。“store” 基本上就是一个容器，它包含着你的应用中大部分的状态 ( state )。
 
 - Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。
 - 改变 store 中的状态的唯一途径就是显式地提交  (commit) mutation。这样使得我们可以方便地跟踪每一个状态的变化。
 
-**Vue SSR：**
+### 11.**Vue SSR：**
 
 SSR就是vue在客户端将标签渲染成的整个 html 片段的工作在服务端完成，服务端形成的html 片段直接返回给客户端这个过程就叫做服务端渲染
 
