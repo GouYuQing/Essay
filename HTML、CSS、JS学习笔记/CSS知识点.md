@@ -310,6 +310,25 @@ px：像素
 
 rem是以html根元素中font-size的大小为基准的相对度量单位，文本的大小不会随着窗口的大小改变而改变。
 
+### 11.CSS加载会造成阻塞吗？
+
+从浏览器的渲染过程来看
+
+![image-20220102214907554](images/image-20220102214907554.png)
+
+1. css加载不会阻塞DOM树的解析【DOM解析和CSS解析是两个并行的过程】
+2. css加载会阻塞DOM树的渲染【Render树在解析之后】
+3. css加载会阻塞后面js语句的执行【js可能会操作DOM和CSS样式，所以应该维持顺序，先HTML，CSS再js】
+
+为了避免让用户看到长时间的白屏时间，我们应该尽可能的提高css加载速度
+
+方法：
+
+1. 使用CDN(因为CDN会根据你的网络状况，替你挑选最近的一个具有缓存内容的节点为你提供资源，因此可以减少加载时间)
+2. 对css进行压缩(可以用很多打包工具，比如webpack,gulp等，也可以通过开启gzip压缩)
+3. 合理的使用缓存(设置cache-control,expires,以及E-tag都是不错的，不过要注意一个问题，就是文件更新后，你要避免缓存而带来的影响。其中一个解决防范是在文件名字后面加一个版本号)
+4. 减少http请求数，将多个css文件合并，或者是干脆直接写成内联样式(内联样式的一个缺点就是不能缓存)
+
 # CSS3知识点
 
 ### 1.画一条0.5px的线
@@ -427,3 +446,43 @@ iteration-count：设置动画执行的次数，infinite为无限次循环。
 direction：是否轮询反向播放动画。normal，默认值，动画应该正常播放；alternate，动画应该轮流反向播放。*/
 ```
 
+# CSS小技巧
+
+### 1.css实现顶部进度条，随着页面滚动进度实现长短变化
+
+![image-20220102220750113](images/image-20220102220750113.png)
+
+```css
+/*使用线性渐变来实现功能*/
+/*整个body添加从左下角到右上角的线性渐变*/
+body {
+    background-image: linear-gradient(to right top, #ffcc00 50%, #eee 50%);
+    background-repeat: no-repeat;
+}
+
+```
+
+![image-20220102221006033](images/image-20220102221006033.png)
+
+```css
+/*运用一个伪元素，把多出来的部分遮住*/
+body::after {
+    content: "";
+    position: fixed;
+    top: 5px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: #fff;
+    z-index: -1;
+}
+/*最后调整渐变高度*/
+body {
+    background-image: linear-gradient(to right top, #ffcc00 50%, #eee 50%);
+    background-size: 100% calc(100% - 100vh + 5px);/*让滑动条和右上角贴合*/
+    background-repeat: no-repeat;
+}
+
+```
+
+[查看文章](https://juejin.cn/post/6844903758074216462)
