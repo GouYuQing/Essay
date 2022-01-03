@@ -329,6 +329,42 @@ rem是以html根元素中font-size的大小为基准的相对度量单位，文�
 3. 合理的使用缓存(设置cache-control,expires,以及E-tag都是不错的，不过要注意一个问题，就是文件更新后，你要避免缓存而带来的影响。其中一个解决防范是在文件名字后面加一个版本号)
 4. 减少http请求数，将多个css文件合并，或者是干脆直接写成内联样式(内联样式的一个缺点就是不能缓存)
 
+### 12.white-space,word-break,word-wrap(overflow-wrap)
+
+`white-space:normal|nowrap|pre|pre-wrap|pre-line;`**控制空白字符显示**
+
+```css
+white-space:nowrap;/*空格被合并成一个空格，永不换行*/
+white-space:pre/*保留空格，但是自动换行没有了*/
+white-space:pre-wrap;/*保留空格和换行*/
+white-space:pre-line;/*空格被合并了，但是换行符可以发挥作用*/
+```
+
+| 能否发挥作用 | 换行符   | 空格   | 自动换行     | &nbsp |
+| ------------ | -------- | ------ | ------------ | ----- |
+| normal       | 不能换行 | 被合并 | 可以自动换行 | √     |
+| nowrap       | 不能换行 | 被合并 | 不能自动换行 | √     |
+| pre          | 可以换行 | 保留   | 不能自动换行 | √     |
+| pre-wrap     | 可以换行 | 保留   | 可以自动换行 | √     |
+| pre-line     | 可以换行 | 被合并 | 可以自动换行 | √     |
+
+`word-break:normal|break-all|keep-all`，**控制单词如何被拆分换行的**
+
+```css
+word-break:keep-all;/*单词不拆分换行，只有空格会拆分换行*/
+word-break:break-all;/*所有单词碰到边界一律拆分换行,可能一个单词会被拆在两行显示，无论长短*/
+```
+
+`word-wrap（overflow-wrap）:normal|break-word`**超过一行的单词是否被拆分换行的,作为word-break的互补**
+
+```css
+word-wrap:break-word;/*当一个单词一整行都显示不下的时候，才显示换行*/
+```
+
+其实word-break也有break-word属性值，但是只有chrome和safari部分浏览器支持
+
+
+
 # CSS3知识点
 
 ### 1.画一条0.5px的线
