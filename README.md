@@ -38,6 +38,8 @@
 
 3.[JS一些知识点](./HTML、CSS、JS学习笔记/JS知识点.md)
 
+4.[前端优化](./HTML、CSS、JS学习笔记/前端优化.md)
+
 ### 其他
 
 1.[es6知识点集合](./HTML、CSS、JS学习笔记/es6.md)
