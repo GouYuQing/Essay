@@ -14,8 +14,6 @@
 
 ## 服务器部署
 
-## 服务器部署
-
 1.[Docker入门到项目实战](./服务器部署/Docker文档整理.md)
 
 2.[GitLab CI入门到实践](./服务器部署/GitLab CI文档整理.md)
@@ -63,6 +61,10 @@
 1.[Flutter环境搭建](./Flutter学习笔记/Flutter环境搭建.md)
 
 2.[Dart学习](./Flutter学习笔记/Dart学习.md)
+
+## 工具类
+
+1.[VsCode使用ESlint+Prettier进行代码自动格式化](./工具类/VsCode代码格式化配置.md)
 
 ## 一些博客和好用的文档整理
 
