@@ -1,10 +1,8 @@
-# 使用ESlint+Prettier配置VSCode进行代码自动格式化
 
-## 1.代码风格
 
-根据公司代码规范设置
+# 配置VSCode满足代码规范
 
-## 2.插件准备
+## 1.插件准备
 
 ### （1）至少安装以下插件
 
@@ -15,16 +13,48 @@
 
 - [`Prettier - Code formatter`](https://link.juejin.cn/?target=https%3A%2F%2Fmarketplace.visualstudio.com%2Fitems%3FitemName%3Desbenp.prettier-vscode) 各种代码格式化，只关注格式化，并不具有eslint检查语法等能力，只关心格式化文件(最大长度、混合标签和空格、引用样式等)，包括JavaScript · Flow · TypeScript · CSS · SCSS · Less · JSX · Vue · GraphQL · JSON · Markdown
 
-## 3.VSCode自动化配置
+## 2.VSCode自动化配置
 
 通过eslint配置代码校验+本地配置prettier插件进行整个项目的格式化
 
 ### （1）配置eslint
 
+ESlint插件默认只提供代码风格检测功能，不能开启代码格式化功能，我们需要配置打开该功能，方便我们在开发时帮助我们格式化代码。
+
+安装插件ESlint，打开扩展，搜索`Eslint`并安装
+
+![image-20220112095856397](images/image-20220112095856397.png)
+
+点击`文件->首选项->设置`，搜索`eslint`，勾选`Format:Enable`选项
+
+![image-20220112094513773](images/image-20220112094513773.png)
+
+也可以打开`VS Code`配置文件`setting.json`，快捷键`ctrl + shirt + p`，搜索`Settings(JSON)`进入`settings.json`进行配置
+
+![image-20220107141718812](images/image-20220107141718812.png)
+
+添加如下选项
+
 ```js
-//.eslintrc.js
+ /*先配置eslint*/
+  "editor.codeActionsOnSave": { // 每次保存的时候将代码按eslint格式进行修复
+    "source.fixAll.eslint": true
+  },
+```
+
+如果要使用使用`eslint`格式化`vue`代码，需要先安装`eslint和eslint-plugin-vue`,如果有相关依赖就不用安装了
+
+```js
+npm install eslint eslint-plugin-vue --save-dev
+eslint --init   
+```
+
+配置`.eslintrc.js`文件
+
+```js
+/*.eslintrc.js*/
 module.exports = {
-	root: true, //默认是底层文件，不再向上搜索
+	root: true, //默认是底层文件，不再向上（父文件）搜索
 	env: {//运行环境
 		browser: true,
 		commonjs: true,
@@ -35,14 +65,14 @@ module.exports = {
 	plugins: ["vue"],//插件【属性值可以省略包名的前缀eslint-plugin-】 eslint-plugin-vue帮助检测.vue里面的template和script代码
 	parserOptions: {
 		parser: "babel-eslint",//解析器
-		sourceType: "module",//解析器配置文件，指定js代码来源script标签引入
+		sourceType: "module",//解析器配置文件，指定js代码来源，比如script标签引入
 	},
     globals: {//全局变量
 		document,
 		navigator,
 		window,
 	},
-	rules: {/*规则自己配，但是配置的规则要和preitter一致，否则会有冲突*/
+	rules: {/*根据规范选择想要的规则，可官网查询相应规则https://eslint.org/docs/rules/*/
 		indent: [2, "tab"],
 		"vue/script-indent": [2, "tab", { baseIndent: 1 }],
 		"vue/html-indent": [2, "tab", { baseIndent: 1 }],
@@ -116,32 +146,58 @@ dist
 .eslintrc.js
 ```
 
-### （2）打开本地配置
+配置完成之后直接`ctrl+s`可以进行代码格式化，出错的地方会红色波浪线提示，或者`ctrl+shift+f`也可以进行代码格式化，但是运行项目时错误会造成项目跑不起来，如果只想红色波浪线提示错误，可以在`vue.config.js`里面加上
 
-- `文件->首选项->设置`进入设置界面，可以在搜索框中搜索要配置的文件进行勾选，但是只有基本配置项
+```js
+lintOnSave: false,//设置是否在开发环境下每次保存代码时都启用 eslint验证
+```
 
-![image-20220111164233104](images/image-20220111164233104.png)
+### （2）推荐安装[Prettier]
 
-- 打开`VS Code`配置文件`setting.json`，快捷键`ctrl + shirt + p`，搜索`Settings(JSON)`进入`settings.json`进行配置
+pretter没有对代码的质量进行检查的能力，只关注格式化，并不具有eslint检查语法等能力，其只会对代码风格按照指定的规范进行统一，避免一个项目中出现多种不同的代码风格
 
-![image-20220107141718812](images/image-20220107141718812.png)
+安装插件ESlint，打开扩展，搜索`prettier`，找到`Prettier-Code formatter`并安装
 
-### （3）setting配置
+![image-20220112100258310](images/image-20220112100258310.png)
+
+`文件->首选项->设置`进入设置界面，可以在搜索框中搜索要配置的文件进行勾选，但是只有基本配置项
+
+![](images/image-20220112101847802.png)
+
+
+
+`settings.json`配置如下，配置时候注意，**Eslint和Prettier配置的规则要一致，否则会有冲突**
+
+```js
+{        
+  /*配置html css js的默认格式化程序*/  
+ "editor.defaultFormatter": "esbenp.prettier-vscode",
+  /*配置prettier*/
+  "prettier.printWidth": 120, // 超过最大值换行
+  "prettier.tabWidth": 4, // 缩进字节数
+  "prettier.useTabs": true, // 缩进使用tab，不使用空格
+  "prettier.semi": true, // 句尾添加分号
+  "prettier.singleQuote": true, // 使用单引号代替双引号
+  "prettier.proseWrap": "preserve", // 默认值。因为使用了一些折行敏感型的渲染器（如GitHub comment）而按照markdown文本样式进行折行
+  "prettier.arrowParens": "avoid", //  (x) => {} 箭头函数参数只有一个时是否要有小括号。avoid：省略括号
+  "prettier.bracketSpacing": true, // 在对象，数组括号与文字之间加空格 "{ foo: bar }"
+  "prettier.eslintIntegration": false, //不让prettier使用eslint的代码格式进行校验
+  "prettier.jsxBracketSameLine": false, // 在jsx中把'>' 是否单独放一行
+  "prettier.jsxSingleQuote": false, // 在jsx中使用单引号代替双引号
+  "prettier.requireConfig": false, // Require a 'prettierconfig' to format prettier
+  "prettier.stylelintIntegration": false, //不让prettier使用stylelint的代码格式进行校验
+  "prettier.trailingComma": "es5", // 在对象或数组最后一个元素后面是否加逗号（在ES5中加尾逗号）
+  "prettier.tslintIntegration": false, // 不让prettier使用tslint的代码格式进行校验
+   }
+```
+
+### （3）其他配置
+
+可以根据自己的喜好配置，本地配置的文件不会影响到项目代码
 
 ```js
 {
-    /*先配置eslint*/
-   "eslint.format.enable": true,//打开eslint格式化
-  "editor.codeActionsOnSave": { // #每次保存的时候将代码按eslint格式进行修复
-    "source.fixAll.eslint": true
-  },
-  /*现在可以使用eslint格式化vue代码，vue中的template、script代码【在安装eslint和eslint-plugin-vue的基础上】*/
-      
-  /*配置html css js的默认格式化程序*/  
- "editor.defaultFormatter": "esbenp.prettier-vscode",//或者直接全部进行设置
-     
-   /*配置编辑器 看个人习惯配置*/
-     
+  /*配置编辑器 看个人习惯配置*/
   "editor.formatOnPaste": true,// 粘贴时格式化代码
   "editor.formatOnSave": true,// 每次保存的时候将代码按格式进行修复
   "editor.detectIndentation": false, // vscode默认启用了根据文件类型自动设置tabsize的选项
@@ -158,24 +214,7 @@ dist
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": true,
   "javascript.format.insertSpaceAfterSemicolonInForStatements": true,
   "javascript.format.insertSpaceBeforeAndAfterBinaryOperators": true,// 在二进制运算符之后定义空间处理。
-      
-   /*配置prettier*/
-  "prettier.printWidth": 120, // 超过最大值换行
-  "prettier.tabWidth": 4, // 缩进字节数
-  "prettier.useTabs": true, // 缩进使用tab，不使用空格
-  "prettier.semi": true, // 句尾添加分号
-  "prettier.singleQuote": true, // 使用单引号代替双引号
-  "prettier.proseWrap": "preserve", // 默认值。因为使用了一些折行敏感型的渲染器（如GitHub comment）而按照markdown文本样式进行折行
-  "prettier.arrowParens": "avoid", //  (x) => {} 箭头函数参数只有一个时是否要有小括号。avoid：省略括号
-  "prettier.bracketSpacing": true, // 在对象，数组括号与文字之间加空格 "{ foo: bar }"
-  "prettier.eslintIntegration": false, //不让prettier使用eslint的代码格式进行校验
-  "prettier.jsxBracketSameLine": false, // 在jsx中把'>' 是否单独放一行
-  "prettier.jsxSingleQuote": false, // 在jsx中使用单引号代替双引号
-  "prettier.requireConfig": false, // Require a 'prettierconfig' to format prettier
-  "prettier.stylelintIntegration": false, //不让prettier使用stylelint的代码格式进行校验
-  "prettier.trailingComma": "es5", // 在对象或数组最后一个元素后面是否加逗号（在ES5中加尾逗号）
-  "prettier.tslintIntegration": false, // 不让prettier使用tslint的代码格式进行校验
-      
+           
   /*css的一些校验 可加可不加*/
   "css.lint.float": "warning",
   "css.lint.idSelector": "warning",
@@ -193,17 +232,19 @@ dist
 
 配置完成之后普通html、css、js都可以格式化，普通文件`ctrl+shift+f`走`prettier`
 
-### （4）出现问题
-
-当使用eslint之后项目里面的自定义js文件没有被检测到格式化，明明设置了使用tab缩进但是却要求要四个空格
-
-## 4.其他插件
+## 3.其他插件
 
 1.`Trailing Spaces` 尾部空格删除插件，高亮空格，并提供了一键删除。
 
 2.`Code Spell Checker`拼写检查
 
 3.`Color Highlight`颜色高亮
+
+4.`Import Cost`依赖包大小提示
+
+5.`Bracket Pair Colorizer 2`括号对齐，可以改变括号相应的颜色方便找到匹配括号
+
+6.`vscode-icon`文件图标显示，不同文件不同图标
 
 
 
