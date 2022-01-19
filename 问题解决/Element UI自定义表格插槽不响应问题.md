@@ -405,3 +405,7 @@ pr里的解决方案是：有设置slot情况下，在beforeUpdate时，重新�
 ```
 
 否则就必须加上`slot-scope="scope"`或者直接使用`v-slot`
+
+## 3.参考地址
+
+1.[问题解决issues](https://github.com/ElemeFE/element/pull/21297)
