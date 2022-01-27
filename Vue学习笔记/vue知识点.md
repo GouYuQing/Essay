@@ -691,3 +691,7 @@ let reactiveData = new Proxy(data, {
 - `actions`: 异步更改状态
 - `getters`: 获取状态
 - `modules`: 将`state`分成多个`modules`，便于管理
+
+### 22.Vue项目中props传值、data数据初始化、watch（immediate: true）和常用钩子之间先后关系
+
+beforeCreate > props > data初始化 >computed > watch（顺序不定） > created > beforeMount > mounted

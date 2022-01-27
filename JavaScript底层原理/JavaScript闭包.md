@@ -35,9 +35,9 @@ foo();
 //这个代码，在checkscope销毁之后，f函数依旧可以读取到 checkscope 作用域下的 scope 值，就是因为闭包
 ```
 
-![image-20200416183610235](D:\code\jsWorkSpace\notes\knowledge\JavaScript底层原理学习.assets\image-20200416183610235.png)
+![](images/image-20200416183610235.png)
 
-![image-20200416183547197](D:\code\jsWorkSpace\notes\knowledge\JavaScript底层原理学习.assets\image-20200416183547197.png)
+![](images/image-20200416183547197.png)
 
 闭包与循环
 
