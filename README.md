@@ -12,6 +12,8 @@
 
 1.[Virtual DOM](./React学习笔记/虚拟DOM.md)
 
+2.[react源码学习](./React学习笔记/react技术揭秘.md)（未完成）
+
 ## 服务器部署
 
 1.[Docker 入门到项目实战](./服务器部署/Docker文档整理.md)

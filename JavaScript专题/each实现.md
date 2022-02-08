@@ -1,12 +1,12 @@
 # JavaScript专题之jQuery通用遍历方法each的实现
 
-```
+```js
 jQuery.each(object, [callback])//通用遍历方法，可用于遍历对象和数组
 ```
 
 回调函数：对象成员或者数组索引+对应变量和内容
 
-```
+```js
 // 遍历数组
 $.each( [0,1,2], function(i, n){
     console.log( "Item #" + i + ": " + n );
@@ -26,7 +26,7 @@ $.each({ name: "John", lang: "JS" }, function(i, n) {
 
 实现each
 
-```
+```js
 function each(obj, callback) {
     var length, i = 0;
 
