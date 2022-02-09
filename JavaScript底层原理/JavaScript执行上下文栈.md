@@ -1,8 +1,30 @@
 # JavaScript执行上下文栈
 
+执行上下文栈，也就是在其它编程语言中所说的“调用栈”，是一种拥有 LIFO（后进先出）数据结构的栈，被用来存储代码运行时创建的所有执行上下文。
+
+遇到函数调用时会逐个入栈，执行栈顶元素，一个一个出栈，控制流程到达执行上下文
+
+```js
+let a = 'Hello World!';
+function first() {
+  console.log('Inside first function');
+  second();
+  console.log('Again inside first function');
+}
+function second() {
+  console.log('Inside second function');
+}
+first();
+console.log('Inside Global Execution Context');
+```
+
+![image-20220126230155286](images\image-20220126230155286.png)
+
+如上图所示，上述代码经历了`全局执行上下文入栈->first入栈->second入栈->second出栈->first出栈->全局上下文出栈`
+
 JavaScript 引擎并非一行一行地分析和执行程序，而是一段一段地分析执行。当执行一段代码的时候，会进行一个“准备工作”，比如第一个例子中的变量提升，和第二个例子中的函数提升。
 
-```
+```js
 var foo = function () {
     console.log('foo1');
 }
