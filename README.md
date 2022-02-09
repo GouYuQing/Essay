@@ -4,9 +4,9 @@
 
 ## vue 学习笔记
 
-1.[vue 开发规范](./vue学习笔记/vue开发规范.md)
+1.[vue 开发规范](./Vue学习笔记/vue开发规范.md)
 
-2.[vue 知识点](./vue学习笔记/vue知识点.md)
+2.[vue 知识点](./Vue学习笔记/vue知识点.md)
 
 ## React 学习笔记
 
@@ -66,7 +66,7 @@
 
 ## 问题解决
 
-1.[Element UI 自定义表格多选框不响应问题](./问题解决/Element UI自定义表格插槽不响应问题.md)
+1.[Element UI 自定义表格多选框不响应问题](./问题解决/ElementUI自定义表格插槽不响应问题.md)
 
 2.[git add .产生的错误](./问题解决/git添加出错.md)
 

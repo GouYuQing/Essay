@@ -81,6 +81,34 @@ var sym3 = Symbol('foo');
 Symbol("foo") === Symbol("foo"); // false
 ```
 
+Symbol作为属性的属性不会被枚举出来，这也是`JSON.stringfy(obj)`时，Symbol属性会被排除在外的原因
+
+```js
+const gender = Symbol('gender');//将Symbol作为属性名
+const obj = {
+  name: 'Sunshine_Lin',
+  age: 23,
+  [gender]: '男'
+}
+console.log(obj['name']) // 'Sunshine_Lin'
+console.log(obj['age']) // 23
+console.log(obj[gender]) // 男
+
+console.log(Object.keys(obj)) // [ 'name', 'age' ] symbol属性值没被枚举出来
+console.log(JSON.stringify(obj)) // {"name":"Sunshine_Lin","age":23}
+```
+
+获取symbol属性的办法
+
+```js
+// 方法一
+console.log(Object.getOwnPropertySymbols(obj)) // [ Symbol(gender) ]
+// 方法二
+console.log(Reflect.ownKeys(obj)) // [ 'name', 'age', Symbol(gender) ]
+```
+
+
+
 ## 4.介绍下 Set、Map、WeakSet 和 WeakMap 的区别？
 
 ### （1）**set**：没有重复的值，set用来构造set数据结构
@@ -659,6 +687,147 @@ Promise 是异步编程的一种解决方案
 
 3.当处于`pending`状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
+### (1)all方法
+
+- 接收一个Promise数组，数组中如有非Promise项，则此项当做成功
+- 如果所有Promise都成功，则返回成功结果数组
+- 如果有一个Promise失败，则返回这个失败结果
+
+```js
+// 如果全都为成功
+function fn(time) {
+  return new Promise((resolve, reject) => {
+    console.log(88)
+    setTimeout(() => {
+      resolve(`${time}毫秒后我成功啦！！！`)
+    }, time)
+  })
+}
+
+Promise.all([fn(2000), fn(3000), fn(1000)]).then(res => {
+  // 3秒后输出 [ '2000毫秒后我成功啦！！！', '3000毫秒后我成功啦！！！', '1000毫秒后我成功啦！！！' ]
+  console.log(res) 
+}, err => {
+  console.log(err)
+})
+
+
+
+// 如果有一个失败
+function fn(time, isResolve) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isResolve ? resolve(`${time}毫秒后我成功啦！！！`) : reject(`${time}毫秒后我失败啦！！！`)
+    }, time)
+  })
+}
+
+Promise.all([fn(2000, true), fn(3000), fn(1000, true)]).then(res => {
+  console.log(res)
+}, err => {
+  console.log(err) // 3秒后输出 '3000毫秒后我失败啦！！！'
+})
+```
+
+### (2)race方法
+
+- 接收一个Promise数组，数组中如有非Promise项，则此项当做成功
+- 哪个Promise最快得到结果，就返回那个结果，无论成功失败
+
+```js
+function fn(time, isResolve) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isResolve ? resolve(`${time}毫秒后我成功啦！！！`) : reject(`${time}毫秒后我失败啦！！！`)
+    }, time)
+  })
+}
+
+Promise.race([fn(2000, true), fn(3000), fn(1000)]).then(res => {
+  console.log(res)
+}, err => {
+  console.log(err) // 1秒后输出
+})
+```
+
+### (3)allSettled方法
+
+- 接收一个Promise数组，数组中如有非Promise项，则此项当做成功
+- 把每一个Promise的结果，集合成数组，返回
+
+```js
+function fn(time, isResolve) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isResolve ? resolve(`${time}毫秒后我成功啦！！！`) : reject(`${time}毫秒后我失败啦！！！`)
+    }, time)
+  })
+}
+
+Promise.allSettled([fn(2000, true), fn(3000), fn(1000)]).then(res => {
+  console.log(res)
+  // 3秒后输出 
+  [
+  { status: 'fulfilled', value: '2000毫秒后我成功啦！！！' },
+  { status: 'rejected', reason: '3000毫秒后我失败啦！！！' },
+  { status: 'rejected', reason: '1000毫秒后我失败啦！！！' }
+]
+})
+```
+
+### (4)any方法
+
+- 接收一个Promise数组，数组中如有非Promise项，则此项当做成功
+- 如果有一个Promise成功，则返回这个成功结果
+- 如果所有Promise都失败，则报错
+
+```js
+// 当有成功的时候，返回最快那个成功
+function fn(time, isResolve) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isResolve ? resolve(`${time}毫秒后我成功啦！！！`) : reject(`${time}毫秒后我失败啦！！！`)
+    }, time)
+  })
+}
+
+Promise.any([fn(2000, true), fn(3000), fn(1000, true)]).then(res => {
+  console.log(res) // 1秒后 输出  1000毫秒后我成功啦
+}, err => {
+  console.log(err)
+})
+
+// 当全都失败时
+function fn(time, isResolve) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isResolve ? resolve(`${time}毫秒后我成功啦！！！`) : reject(`${time}毫秒后我失败啦！！！`)
+    }, time)
+  })
+}
+
+Promise.any([fn(2000), fn(3000), fn(1000)]).then(res => {
+  console.log(res)
+}, err => {
+  console.log(err) // 3秒后 报错 all Error
+})
+```
+
+### (5)finally方法
+
+无论失败或者成功状态，都会执行这个函数
+
+```js
+new Promise((resolve, reject) => {
+  reject('失败喽')
+}).then(
+  res => { console.log(res) },
+  err => { console.log(err) }
+).finally(() => { console.log('我是finally') })
+```
+
+
+
 ## 10.Generator函数
 
 异步编程解决方案：执行 Generator 函数会返回一个遍历器对象
@@ -868,11 +1037,12 @@ var arr3 = [...arr1, ...arr2];
 ``` js
 const obj = {a: 1, b: 2, c: 3};
 Object.keys(obj); // ['a','b','c'] 取key值
-Object.entries(obj); // [['a', 1], ['b', 2], ['c', 3]] 取key和value
+Object.entries(obj); // [['a', 1], ['b', 2], ['c', 3]] 取key和value，把对象转换成键值对数组
 Object.values(obj); // [1,2,3] 取value
 
 Object.fromEntries()是entries()的逆向操作
-Object.fromEntries([['a', 1], ['b', 2], ['c', 3]])；// {a: 1, b: 2, c: 3}
+Object.fromEntries([['a', 1], ['b', 2], ['c', 3]]);// {a: 1, b: 2, c: 3} 把键值对数组转换成对象
+Object.fromEntries(map);//还可以吧Map转换成对象
 ```
 
 ## 16. 链判断操作符 (?.)----ES2020
@@ -883,6 +1053,13 @@ Object.fromEntries([['a', 1], ['b', 2], ['c', 3]])；// {a: 1, b: 2, c: 3}
 
 ```js
 iterator.return?.()
+
+if(list && list.length){  
+}
+//同理为
+list?.length
+
+let a = list?.length;//如果list.length没有就是undefined,有就是list.length
 ```
 
 **应用**
@@ -920,7 +1097,25 @@ a?.b = c
 
 ## 	17. Null判断操作符(??)
 
-​	运算符左侧的值为`null`或`undefined`时，返回右侧的值
+​	运算符左侧的值为`null`或`undefined`时，返回右侧的值,和||有异曲同工之妙
+
+```js
+const a = 0 || '林三心' // 林三心
+const b = '' || '林三心' // 林三心
+const c = false || '林三心' // 林三心
+const d = undefined || '林三心' // 林三心
+const e = null || '林三心' // 林三心
+```
+
+但是在??里面，只有`undefined和null`才算假值
+
+```js
+const a = 0 ?? '林三心' // 0
+const b = '' ?? '林三心' // ''
+const c = false ?? '林三心' // false
+const d = undefined ?? '林三心' // 林三心
+const e = null ?? '林三心' // 林三心
+```
 
 ```js
 let user = { name: 'tomas', age: 19, isAdmin: false };
@@ -1088,29 +1283,36 @@ var array2 = array.splice(3);
    * slice( startIdx , endIdx ) 
    * slice( index )
    * slice() 浅拷贝数组
-
 2. concat 合并，返回新数组
-
 3. indexOf  返回数组中指定元素**第一次**出现的下标，没有则返-1。 **满足条件后不再进行循环**
-
 4. lastIndexOf  返回数组中指定元素**最后一次**出现的下标，没有则返-1
-
 5. find()  数组中**第一个**满足所提供回调函数的那一项，都不满足则返回 undefined。**满足条件后不再进行循环**
-
 6. findIndex()  数组中通过提供回调函数的**第一个元素**的索引。若都未通过则返回-1
+
+```js
+const findArr = [
+  { name: '科比', no: '24' },
+  { name: '罗斯', no: '1' },
+  { name: '利拉德', no: '0' }
+]
+const kobe = findArr.find(({ name }) => name === '科比')
+const kobeIndex = findArr.findIndex(({ name }) => name === '科比')
+console.log(kobe) // { name: '科比', no: '24' }
+console.log(kobeIndex) // 0
+```
 
 7. reduce()
 
-   ```js
-   // 应用：
-   // 累加
-   // 数组降维
-   [[2,5],[1,3]].reduce((pre,cur)=>pre.concat(cur))
-   // 数组中元素出现的次数
-   // 数组去重  [...new Set(arr)]
-   // 跟了个初始空数组 不然concat将报错
-   [1,2,2,3,5,4,4,3].reduce((pre,cur)=> pre.includes(cur)? pre: pre.concat(cur),[])
-   ```
+```js
+// 应用：
+// 累加
+// 数组降维
+[[2,5],[1,3]].reduce((pre,cur)=>pre.concat(cur))
+// 数组中元素出现的次数
+// 数组去重  [...new Set(arr)]
+// 跟了个初始空数组 不然concat将报错
+[1,2,2,3,5,4,4,3].reduce((pre,cur)=> pre.includes(cur)? pre: pre.concat(cur),[])
+```
 
 8. map 返回新数组
 
@@ -1121,19 +1323,116 @@ var array2 = array.splice(3);
   * forEach返回undefined
 * 相同之处：都不能终止循环，除非报错
 
-9. fliter() 返回所有满足条件的数组项组成的新数组
-10. every() 测试数组内的所有元素是否都能满足回调函数中的条件，返回true/false
-11. some() 测试数组中是不是至少有1个元素通过了回调函数的条件，返回true/false
+10. fliter() 返回所有满足条件的数组项组成的新数组
+11. every() 测试数组内的所有元素是否都能满足回调函数中的条件，返回true/false
+12. some() 测试数组中是不是至少有1个元素通过了回调函数的条件，返回true/false
 
-## 21.一些编程小技巧
+## 21.数字分隔符
 
-**转时间戳**
+数字分隔符可以让你在定义长数字时，更加地一目了然
+
+```js
+const num = 1000000000
+// 使用数字分隔符
+const num = 1_000_000_000
+```
+
+## 22.||=和&&=
+
+```js
+// 或等于(||=)  
+a ||= b 等同于 a || (a = b);
+//且等于(&&=)   
+a &&= b 等同于 a && (a = b);
+```
+
+## 23.Class
+
+以前使用构造函数生成对象
+
+```js
+function Person(name) {
+  this.name = name
+}
+Person.prototype.sayName = function () {
+  console.log(this.name)
+}
+const kobe = new Person('科比')
+kobe.sayName() // 科比
+```
+
+现在使用class
+
+```js
+class Person(){
+   constructor(name) {
+    // 构造器
+    this.name = name
+  }
+  sayName() {
+    console.log(this.name)
+  }
+}
+const kobe = new Person('科比')
+kobe.sayName() // 科比
+```
+
+`class`本质是`function`，`class`是`function`的语法糖
+
+静态属性和静态方法，使用`static`定义的属性和方法只能class自己用，实例用不了,`extend`可以实现继承
+
+## 24.for of 和for in
+
+- for in ：遍历方法，可遍历对象和数组
+- for of ：遍历方法，只能遍历数组，不能遍历非iterable对象
+
+**for..of**
+
+```js
+const obj = { name: '林三心', age: 22, gender: '男' }
+const arr = [1, 2, 3, 4, 5]
+
+for(let key in obj) {
+  console.log(key)
+}
+//name
+//age
+//gender
+
+for(let index in arr) {
+  console.log(index)
+}
+//0 1 2 3 4
+
+```
+
+**for...in**
+
+```js
+for(let item of arr) {
+  console.log(item)
+}
+//1 2 3 4 5
+```
+
+## 25.BigInt
+
+`BigInt`是ES10新加的一种JavaScript数据类型，用来表示表示大于 `2^53 - 1` 的整数，`2^53 - 1`是ES10之前，JavaScript所能表示最大的数字
+
+```js
+const alsoHuge = BigInt(9007199254740991);
+// 9007199254740991n
+```
+
+## 26.一些编程小技巧
+
+### (1)**转时间戳**
 
 ```js
 const timestamp = +new Date("2019-02-14");// 1550102400000
 ```
 
-**向下取整**
+### (2)**向下取整**
 
 ```js
 Math.floor(1.5)
@@ -1142,7 +1441,7 @@ Math.floor(1.5)
 1.6 | 1; // 1
 ```
 
-**是否为空对象**
+### (3)**是否为空对象**
 
 ```js
 const obj = {};
@@ -1151,7 +1450,7 @@ const flag = !Array.isArray(obj) && !Object.keys(obj).length;
 JSON.stringfy({}) === '{}';
 ```
 
-**交换赋值**
+### (4)**交换赋值**
 
 ```js
 let a = 0;
@@ -1160,7 +1459,7 @@ let b = 1;
 // a b => 1 0
 ```
 
-**过滤空值(Boolean后为false的)**
+### (5)**过滤空值(Boolean后为false的)**
 
 ```js
 const arr = [undefined, null, "", 0, false, NaN, 1, 2];
@@ -1169,16 +1468,31 @@ arr.filter(Boolean); // [1,2]
 arr.filter(item => {return Boolean(item)})
 ```
 
-**创建指定长度且值相等的数组**
+### (6)**创建指定长度且值相等的数组**
 
 ```js
 const arr = new Array(3).fill(0);
 // arr => [0, 0, 0]
 ```
 
-## 22.参考资料
+### (7)求幂运算符
+
+以前求幂，我们需要这么写
+
+```js
+const num = Math.pow(3, 2) // 9
+```
+
+ES7提供了求幂运算符：`**`
+
+```js
+const num = 3 ** 2 // 9
+```
+
+## 27.参考资料
 
 ### （1）es6入门教程
 
 ### （2）[推荐文章：你会用ES6，那倒是用啊！](https://juejin.cn/post/7016520448204603423)
 
+（3）[es6-es12开发技巧](https://juejin.cn/post/6995334897065787422#heading-8)
