@@ -2,7 +2,7 @@
 
 ## 1.什么是执行上下文
 
-执行上下文是评估和执行 JavaScript 代码的环境的抽象概念
+执行上下文是评估和执行 JavaScript 代码的环境的抽象概念，JavaScript 代码执行一段可执行代码(executable code)时，会创建对应的执行上下文(execution context)。
 
 ## 2.执行上下文类型
 
@@ -21,6 +21,268 @@
 执行上下文最明显的就是this的指向是执行时确定的。而作用域访问的变量是编写代码的结构确定的
 
 作用域和执行上下文之间最大的区别是： **执行上下文在运行时确定，随时可能改变；作用域在定义时就确定，并且不会改变**。
+
+## 3.执行上下文包括什么？
+
+对于每个执行上下文，都有三个重要属性：
+
+- **变量对象(Variable object，VO)**
+- **作用域链(Scope chain)**
+- **this**
+
+### （1）变量对象
+
+变量对象，是执行上下文中的一部分，可以抽象为一种 **数据作用域**，其实也可以理解为就是一个简单的对象，它存储着该执行上下文中的所有 **变量和函数声明(不包含函数表达式)**。
+
+#### a.全局上下文的变量对象
+
+**全局对象是什么？**
+
+1. 可以通过 this 引用，在客户端 JavaScript 中，全局对象就是 Window 对象。
+
+```js
+console.log(this);
+```
+
+2. 全局对象是由 Object 构造函数实例化的一个对象。
+
+```js
+console.log(this instanceof Object);
+```
+
+3. 预定义了一堆函数和属性。
+
+```js
+// 都能生效
+console.log(Math.random());
+console.log(this.Math.random());
+```
+
+4. 作为全局变量的宿主。
+
+```js
+var a = 1;
+console.log(this.a);
+```
+
+5. 客户端 JavaScript 中，全局对象有 window 属性指向自身。
+
+```js
+var a = 1;
+console.log(window.a);
+
+this.window.b = 2;
+console.log(this.b);
+```
+
+全局上下文中的变量对象就是全局对象
+
+#### b.函数上下文的变量对象
+
+在函数上下文中，我们用活动对象(activation object, AO)来表示变量对象（VO）。（活动对象就是变量对象，**VO进入执行上下文之后被激活，变成AO**）
+
+活动对象是在进入函数上下文时刻被创建的，它通过函数的 arguments 属性初始化。arguments 属性值是 Arguments 对象（**调用函数时，会为其创建一个Arguments对象，并自动初始化局部变量arguments，指代该Arguments对象。所有作为参数传入的值都会成为Arguments对象的数组元素**。）。
+
+```js
+function foo(a) {
+  var b = 2;
+  function c() {}
+  var d = function() {};
+  b = 3;
+}
+foo(1);
+//进入执行上下文之后，AO为
+AO = {
+    arguments: {
+        0: 1,
+        length: 1
+    },
+    a: 1,
+    b: undefined,
+    c: reference to function c(){},
+    d: undefined
+}
+//执行之后
+AO = {
+    arguments: {
+        0: 1,
+        length: 1
+    },
+    a: 1,
+    b: 3,
+    c: reference to function c(){},
+    d: reference to FunctionExpression "d"
+}
+//总结
+//全局上下文的变量对象初始化是全局对象
+
+// 函数上下文的变量对象初始化只包括 Arguments 对象
+
+// 在进入执行上下文时会给变量对象添加形参、函数声明、变量声明等初始的属性值
+
+//在代码执行阶段，会再次修改变量对象的属性值
+```
+
+##### **举个例子**
+
+###### ①第一题
+
+```js
+function foo() {
+    console.log(a);
+    a = 1;
+}
+foo(); // ???
+function bar() {
+    a = 1;
+    console.log(a);
+}
+bar(); // ???
+```
+
+第一段会报错：`Uncaught ReferenceError: a is not defined`。
+
+第二段会打印：`1`。
+
+这是因为函数中的 "a" 并没有通过 var 关键字声明，所有不会被存放在 AO 中。
+
+第一段执行 console 的时候， AO 的值是：
+
+```js
+AO = {
+    arguments: {
+        length: 0
+    }
+}
+```
+
+没有 a 的值，然后就会到全局去找，全局也没有，所以会报错。
+
+当第二段执行 console 的时候，全局对象已经被赋予了 a 属性，这时候就可以从全局找到 a 的值，所以会打印 1。
+
+###### ②第二题
+
+```js
+console.log(foo);
+function foo(){
+    console.log("foo");
+}
+var foo = 1;
+```
+
+会打印函数，而不是 undefined 。
+
+这是因为在进入执行上下文时，首先会处理函数声明，其次会处理变量声明，如果如果变量名称跟已经声明的形式参数或函数相同，则变量声明不会干扰已经存在的这类属性。
+
+**函数提升（函数一等公民）>变量提升**
+
+### （2）作用域链
+
+当查找变量的时候，会先从**当前上下文的变量对象**中查找，如果没有找到，就会从父级(词法层面上的父级)**执行上下文的变量对象中查找**，一直找到全局上下文的变量对象，也就是**全局对象**。这样由多个执行上下文的变量对象构成的链表就叫做**作用域链**。（作用域链可以理解为一组对象列表，包含 **父级和自身的变量对象**，因此我们便能通过作用域链访问到父级里声明的变量或者函数。）
+
+函数有一个内部属性 [[scope]]，函数创建的时候，就会保存所有父变量对象到其中
+
+```js
+function foo() {
+    function bar() {
+        ...
+    }
+}
+//函数创建时，各自的作用域链为
+foo.[[scope]] = [
+  globalContext.VO
+];
+
+bar.[[scope]] = [
+    fooContext.AO,
+    globalContext.VO
+];
+//函数激活之后，进入函数上下文，创建 VO/AO 后，就会将活动对象添加到作用链的前端
+作用域链表示为Scope=[AO].concat([Scope]);
+```
+
+#### **举个栗子：**总例子：（关于变量对象和执行上下文和作用域链）
+
+```js
+var scope = "global scope";
+function checkscope(){
+    var scope2 = 'local scope';
+    return scope2;
+}
+checkscope();
+```
+
+1.函数创建，保存作用域链
+
+```js
+checkscope.[[scope]] = [globalContext.VO]
+```
+
+2..执行 checkscope 函数，创建 checkscope函数执行上下文，被压入栈中
+
+```js
+ECStack= [ checkscopeContext,globalContext];
+```
+
+3.函数做准备工作
+
+（1）创建函数作用域链
+
+```js
+checkscopeContext={Scope:checkscope.[[scope]]}
+```
+
+（2）创建活动对象，初始化活动对象，加入形参、函数声明、变量声明
+
+```js
+checkscopeConetxt={
+	AO:{
+		arguments:{
+		length: 0
+		},                     
+		scope2: undefined
+		},
+	Scope:checkscope.[[scope]]
+}
+```
+
+（3）将活动对象压入 checkscope 作用域链顶端
+
+```js
+checkscopeContext = {
+    AO: {
+        arguments: {
+            length: 0
+        },
+        scope2: undefined
+    },
+    Scope: [AO, [[Scope]]]
+}
+```
+
+4.执行函数,修改AO
+
+```js
+checkscopeContext = {
+    AO: {
+        arguments: {
+            length: 0
+        },
+        scope2: 'local scope'
+    },
+    Scope: [AO, [[Scope]]]
+}
+```
+
+5.找到了scope2的值，函数执行完毕，函数上下文从栈中弹出
+
+```js
+ECStack = [
+    globalContext
+];
+```
+
+### （3）this指向
 
 ## 3.如何存储执行上下文？
 
