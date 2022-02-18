@@ -405,49 +405,71 @@ var foo = {
 }
 
 //示例1
-console.log(foo.bar());
+console.log(foo.bar()); // 2
 //示例2
-console.log((foo.bar)());
+console.log((foo.bar)());// 2
 //示例3
-console.log((foo.bar = foo.bar)());
+console.log((foo.bar = foo.bar)()); //1
 //示例4
-console.log((false || foo.bar)());
+console.log((false || foo.bar)());// 1
 //示例5
-console.log((foo.bar, foo.bar)());
+console.log((foo.bar, foo.bar)());// 1
 ```
 
 所以 这样来看
 
-```
+```js
 var Reference = {
   base: foo,
   name: 'bar',
   strict: false
 };
-现在来判断MemberExpression返回的结果是不是Reference类型，IsPropertyReference（XXX）是true，那this的值就是GetBase(of)
+//现在来判断MemberExpression返回的结果是不是Reference类型，IsPropertyReference（XXX）是true，那this的值就是GetBase(ref)
 ```
 
-base value是foo，foo是一个对象，所以为true
+base value是foo，foo是一个对象， IsPropertyReference(ref) 结果为true
 
-this = GetBase(MemberExpression返回的结果)
+又因为`this = GetBase(MemberExpression返回的结果)`
 
-this = GetBase(foo),所以this指向foo
+```js
+this = GetBase(ref);
+```
 
-实例2和实例1是一样的结果
+`this = GetBase(foo),`所以this指向foo
+
+示例1和示例2是一样的结果,this指向foo,结果是2
 
 实例3 (foo.bar = foo.bar)()
 
 使用了赋值操作符，使用了GetValue，所以不是Reference类型，不是就是this指向undefined
 
-this 为 undefined，非严格模式下，this 的值为 undefined 的时候，其值会被隐式转换为全局对象。
+this 为 undefined，非严格模式下，this 的值为 undefined 的时候，其值会被隐式转换为全局对象。所以结果是1，如果是严格模式下，报错
 
 实例4(false || foo.bar)()
 
-或运算符，使用了GetValue，所以不是Reference类型，不是就是this指向undefined，同例子3
+或运算符，使用了GetValue，所以不是Reference类型，不是就是this指向undefined，同例子3，结果是1
 
 实例5 (foo.bar, foo.bar)()
 
-逗号操作符，同上所述
+逗号操作符，同上所述，结果是1，
+
+###### （3）举个栗子
+
+所以不能简单理解成this就是调用函数的对象，否则如下案例就不对
+
+```js
+var value = 1;
+
+var foo = {
+  value: 2,
+  bar: function () {
+    return this.value;
+  }
+}
+console.log((false || foo.bar)()); // 1
+```
+
+如果简单理解的话，那就是this指向调用的对象，就是2，但是实际是1
 
 ## 3.如何存储执行上下文？
 
@@ -664,7 +686,9 @@ js开始执行语句，对定义的变量赋值、顺着作用域链访问变量
 
 当前执行上下文（局部环境）会被弹出执行上下文栈并且销毁，控制权被重新交给执行栈上一层的执行上下文。
 
-但是对于闭包来说，当闭包的父函数执行完成后，父函数本身执行环境的作用域链会被销毁，但是由于闭包的作用域链仍然在引用父函数的变量对象，导致了父函数的变量对象会一直驻存于内存，无法销毁，除非闭包的引用被销毁，闭包不再引用父函数的变量对象，这块内存才能被释放掉。过度使用闭包会造成 **内存泄露** 的问题
+但是对于闭包来说，当闭包的父函数执行完成后，父函数本身执行环境的作用域链会被销毁，但是由于闭包的作用域链仍然在引用父函数的变量对象，导致了父函数的变量对象会一直驻存于内存，无法销毁，除非闭包的引用被销毁，闭包不再引用父函数的变量对象，这块内存才能被释放掉。过度使用闭包会造成 **内存泄露** 的问题。
+
+闭包理解：[见《JavaScript闭包》](./JavaScript闭包.md)
 
 
 
