@@ -54,6 +54,10 @@
 
 2.[原型/原型链](./JavaScript底层原理/JavaScript原型原型链.md)
 
+3.[执行上下文和执行上下文栈](./JavaScript底层原理/JavaScript执行上下文.md)
+
+4.[闭包](./JavaScript底层原理/JavaScript闭包.md)
+
 ## 计算机网络
 
 1.[跨域的原理](./计算机网络/跨域的原理.md)
