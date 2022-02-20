@@ -8,12 +8,17 @@ JavaScript引擎执行JavaScript代码
 
 ### （1）global this
 
-- 在浏览器里，在全局范围内，this等价于window对象。
+- 在浏览器里，在全局范围内，this等价于window对象。var == = this === winodw
 
 ```js
 //var声明的变量是全局的，然后相当于给this和window添加属性
 var foo = "bar";
 console.log(this.foo); //logs "bar"    console.log(window.foo); //logs "bar"
+console.log(window === this); // true
+var a = 1;
+this.b = 2;
+window.c = 3;
+console.log(a + b + c); // 6
 ```
 
 - 如果你声明变量时没有使用var或者let，就是在给全局的this添加属性
@@ -105,7 +110,7 @@ testThis();  //Uncaught TypeError: Cannot set property 'foo' of undefined
        method();
   } 
     var thing = new Thing();
-    doIt(thing.lofFoo);//logs undefined不绑定就是undefined
+    doIt(thing.logFoo);//logs undefined 不绑定就是undefined
     doIt(thing.logFoo.bind(thing)); //logs bar
   ```
   
@@ -151,11 +156,11 @@ testThis();  //Uncaught TypeError: Cannot set property 'foo' of undefined
   logFoo.apply(obj)//log "bar"
   ```
 
-#### DOM event this
+### （5）DOM event this
 
 - 在一个HTML DOM事件处理程序里面，this始终指向这个处理程序被所绑定到的HTML DOM节点
 
-#### HTML this
+### （6）HTML this
 
 - 在HTML节点的属性里面，你可以放置JavaScript代码，this指向了这个元素
 
@@ -164,29 +169,29 @@ testThis();  //Uncaught TypeError: Cannot set property 'foo' of undefined
   //document.getElementById("foo").click(); //logs <div id="foo"...
   ```
 
-#### override this
+### （7）override this
 
 - 你不能重写this，因为它是保留字。
 
 - 你可以通过eval来访问this
 
-  ```
+  ```js
   function Thing () {
   }
   Thing.prototype.foo = "bar";
   Thing.prototype.logFoo = function () {
       eval("console.log(this.foo)"); //logs "bar"
   }
-  //但是eval造成安全问题，所以一般用
+  //但是eval造成安全问题，所以一般用new来调用访问this
   var thing = new Thing();
   thing.logFoo();
   ```
 
-#### with this
+### （8）with this
 
 - 你可以通过with来将this添加到当前的执行环境，并且读写this的属性的时候不需要通过this
 
-```
+```js
 function Thing () {
  }
  Thing.prototype.foo = "bar";
@@ -201,22 +206,22 @@ Thing.prototype.logFoo = function () {
  console.log(thing.foo); // logs "foo"
 ```
 
-#### jQuery this
+### （9）jQuery this
 
 - JQuery的this都指向HTML元素节点
 
-```
+```js
 <div class="foo bar1"></div>
 $(".foo").on("click", function () {
       console.log(this); //logs <div class="foo...
 });
 ```
 
-#### thisArg this(???没用过不知道)
+### （10）thisArg this
 
 - thisArg 的函数参数来传递实例，这个函数参数会作为this的上下文
 
-# this执向的情况
+## 2. this执向的情况
 
 1. 构造函数被new调用的，this指向新构建的对象
 2. call、apply、bind绑定的，this是明确的指向的对象
@@ -233,19 +238,33 @@ var obj = {a: 1, b: function(){console.log(this);}}
 4、作为call与apply调用 obj.b.apply(object, []); // this指向当前的object
 ```
 
+### （1）**call(),apply(),bind()**
 
+this指向绑定的对象上
 
-# [JavaScript中嵌套函数的this关键字的理解](https://www.cnblogs.com/princeding/p/4438616.html)
+call->单个参数
+
+apply->参数是数组
+
+bind参数都可以
+
+### （2）**箭头函数**
+
+所有的箭头函数都没有自己的`this`，都指向外层。
+
+箭头函数会捕获其所在上下文的this值，作为自己的this值
+
+## 3.[JavaScript中嵌套函数的this关键字的理解](https://www.cnblogs.com/princeding/p/4438616.html)
 
 我们都知道，在方法调用中，this指代的是方法所属的对象，如以下代码：
 
-```
+```js
 obj.test(console.log(this === obj)); //返回true
 ```
 
 但是在嵌套函数中，情况就发生了很大变化。这需要分为两种情况：严格模式和非严格模式
 
-```
+```js
 //非严格模式下
 var obj = {
     test:function (){
@@ -262,7 +281,7 @@ var obj = {
 obj.test();
 ```
 
-```
+```js
 //严格模式下
 "use strict"
 var obj = {
@@ -284,7 +303,7 @@ obj.test();
 可以通过如下几种办法来解决此问题：
 （1）定义变量，保存对象this
 
-```
+```js
 getAge: function () { 
 		let self = this;
         setTimeout(function(){ alert(self.age)}, 1000)
@@ -294,7 +313,7 @@ getAge: function () {
 
 (2)通过bind/call/apply方法改变函数this指向
 
-```
+```js
 getAge: function () { 
         setTimeout(function(){ alert(this.age)}.bind(this), 1000)
     }
@@ -304,7 +323,7 @@ getAge: function () {
 (3)通过箭头函数的方式
 由于箭头函数具有默认指向父级调用对象obj的特点，因此也可以解决本问题
 
-```
+```js
 getAge: function () { 
         setTimeout(() => { alert(this.age)}, 1000)
     }

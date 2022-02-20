@@ -60,6 +60,8 @@
 
 5.[参数按值传递](./JavaScript底层原理/JavaScript参数按值传递.md)
 
+5.[this及this指向](./JavaScript底层原理/this.md)
+
 ## 计算机网络
 
 1.[跨域的原理](./计算机网络/跨域的原理.md)
