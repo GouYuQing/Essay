@@ -58,6 +58,8 @@
 
 4.[闭包](./JavaScript底层原理/JavaScript闭包.md)
 
+5.[参数按值传递](./JavaScript底层原理/JavaScript参数按值传递.md)
+
 ## 计算机网络
 
 1.[跨域的原理](./计算机网络/跨域的原理.md)
