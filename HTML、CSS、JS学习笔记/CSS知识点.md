@@ -69,8 +69,6 @@ body{
 } 
 ```
 
-
-
 ### 2.::first-letter和其他选择器
 
 ![image-20200308220329449](D:\code\jsWorkSpace\notes\Essay\HTML、CSS、JS学习笔记\images\image-20200308220329449-1639405111462.png)
@@ -363,6 +361,94 @@ word-wrap:break-word;/*当一个单词一整行都显示不下的时候，才显
 
 其实word-break也有break-word属性值，但是只有chrome和safari部分浏览器支持
 
+### 13.三栏布局
+
+#### （1）绝对定位
+
+```css
+.left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    background-color: #f00;
+}
+.right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    background-color: #00f;
+}
+.main {
+    position: absolute;
+    top: 0;
+    left: 100px;
+    right: 200px;
+    background-color: #0f0;
+}
+```
+
+#### （2）flex布局
+
+```css
+.container {
+    display: flex;
+}
+.left {
+    flex: 0 0 100px;
+    background-color: #f00;
+}
+.main {
+    flex: 1;
+    background-color: #0f0;
+}
+.right {
+    flex: 0 0 200px;//放大缩小真实大小
+    background-color: #00f;
+}
+```
+
+#### （3）table
+
+```css
+.container {
+    display: table;
+}
+.left {
+    display: table-cell;
+    width: 100px;
+    background-color: #f00;
+}
+.right {
+    display: table-cell;
+    width: 200px;
+    background-color: #00f;
+}
+.main {
+    display: table-cell;
+    background-color: #0f0;
+}
+```
+
+#### （4）grid布局
+
+```css
+.container {
+    display: grid;
+   grid-template-columns: 100px 1fr 100px;
+}
+.left {
+   background: red;
+}
+.right {
+    background-color: #00f;
+}
+.main {
+    background-color: #0f0;
+}
+```
+
 
 
 # CSS3知识点
@@ -542,8 +628,6 @@ content-box只在内容区绘制（显示），不算padding和border，相当�
  -webkit-box-reflect: right 10px;/*右倒影且有偏移*/
  -webkit-box-reflect: below 0 linear-gradient(transparent, white);/*下倒影（图片遮罩）*/
 ```
-
-
 
 ### 10.background-size
 
