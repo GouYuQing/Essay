@@ -132,11 +132,11 @@ z-index就是一个元素在屏幕`Z轴`上的堆叠顺序。`z-index`值越大�
 
 “层叠顺序”(stacking order)表示元素发生层叠时按照特定的顺序规则在`Z轴`上垂直显示
 
-**层叠上下文”和“层叠等级”是一种概念，而“层叠顺序”是一种规则**
+**“层叠上下文”和“层叠等级”是一种概念，而“层叠顺序”是一种规则**
 
 当元素发生层叠时，遵循如下规则
 
-```
+```js
 层叠上下文的background/border < z-index<0 < block块级水平盒子 < float浮动盒子 < inline/inline-block水平盒子 < z-index:auto/index:0 < z-index>0
 ```
 

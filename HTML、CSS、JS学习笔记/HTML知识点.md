@@ -84,11 +84,11 @@ iframe和主页面共享连接池，而浏览器对相同区域有限制所以�
 
 浮动会脱离文档流
 
-![image-20200330113918754](D:\code\jsWorkSpace\notes\Essay\HTML、CSS、JS学习笔记\HTML知识点.assets\image-20200330113918754.png)
+![image-20200330113918754](images/image-20200330113918754.png)
 
-![image-20200330113908638](D:\code\jsWorkSpace\notes\Essay\HTML、CSS、JS学习笔记\HTML知识点.assets\image-20200330113908638.png)
+![image-20200330113908638](images/image-20200330113908638.png)
 
-![image-20200330113928870](D:\code\jsWorkSpace\notes\Essay\HTML、CSS、JS学习笔记\HTML知识点.assets\image-20200330113928870.png)
+![image-20200330113928870](images/image-20200330113928870.png)
 
 clear:定段落的左侧或右侧不允许浮动的元素
 
@@ -130,6 +130,60 @@ http-equiv 属性：`http`的文件头作用，它可以向浏览器传回一些
 比如：content-type:text/html。这将告诉浏览器准备接受一个 HTML 文档
 
 name 属性：name 属性提供了名称/值对中的名称。告诉搜索引擎当前页面关键字（方便被搜索）
+
+### 10.解释Cookie，会话存储和本地存储之间的区别？
+
+本地存储**：（本地存储必须是**字符串**类型的，如果是想要存对象，需要先将对象转换成字符串来存储）
+
+- 通过本地存储（Local Storage），web 应用程序能够在用户浏览器中对数据进行本地的存储。
+- 在 HTML5 之前，应用程序数据只能存储在 cookie 中，包括每个服务器请求。本地存储则更安全，并且可在不影响网站性能的前提下将大量数据存储于本地。
+- 与 cookie 不同，存储限制要大得多（**至少5MB**），并且信息不会被传输到服务器。
+
+会话存储：
+
+会话存储的工作方式和[本地存储](http://www.cnblogs.com/wuqun/p/6373828.html)的工作方式很接近，不同之处在于数据是各个浏览器上下文私有的，会**在浏览器被关闭时移除**（注意是被关闭时才移除，刷新是不会移除的）。我们通过全局**sessionStorage**访问会话存储，它返回一个Storage对象，该对象与[本地存储](http://www.cnblogs.com/wuqun/p/6373828.html)里的是一样的。
+
+cookie：
+
+**Cookie**实际上是一小段的文本信息（**key-value格式**）。**在浏览器和服务器之间进行传递**，客户端向服务器发起请求，如果服务器需要记录该用户状态，就使用response向客户端浏览器颁发一个Cookie。客户端浏览器会把Cookie保存起来。当浏览器再请求该网站时，浏览器把请求的网址连同该Cookie一同提交给服务器。服务器检查该Cookie，以此来辨认用户状态。
+
+本地存储、会话存储和cookie都是客户端存储解决方案
+
+会话数据保存在服务器上，而服务器仍由您直接控制。
+
+本地存储和会话存储localStorage和sessionStorage是相对较新的API(意思是，并非所有遗留浏览器都将支持它们)
+
+会话存储(顾名思义)仅在浏览器会话期间可用(并在关闭选项卡或窗口时被删除)
+
+储在localStorage和sessionStorage中的数据可以很容易地从客户机/浏览器中读取或更改，因此不应该依赖于在应用程序中存储敏感或与安全相关的数据
+
+相同点：都存储在客户端
+
+不同点：
+
+　　　　1.大小
+
+　　　　　　cookie的存储大小不超过4KB
+
+　　　　　　sessionStorage和localStorage可以达到5MB或更大；
+
+　　　　2.数据存在时间：
+
+　　　　　　　LocalStorage：关闭浏览器数据依旧会存在，除非主动删除其中数据；
+
+　　　　　　　sessionStorage：当前页关闭则数据删除；
+
+　　　　　　　cookie：根据用户设置的cookie保存时间来定，在设定时间到来之前都会一直存在；
+
+　　　　3.数据与服务器之间的交互方式
+
+　　　　　　 cookie的数据会自动传递到服务器，服务的也可以写到客户端
+
+　　　　　　LocalStroage和sessionStroage的数据仅保存在本地
+
+​               4. 存储数据
+
+​				cookies存储用户信息，sessionStroage和LocalStroage存储客户端信息
 
 ## HTML5知识点
 

@@ -15,7 +15,7 @@ var 声明的变量存在变量提升的特性
 
 #### (1)不会被提升
 
-```
+```js
 if (false) {
     let value = 1;
 }
@@ -24,7 +24,7 @@ console.log(value); // Uncaught ReferenceError: value is not defined
 
 #### (2)重复声明报错
 
-```
+```js
 var value = 1;
 let value = 2; // Uncaught SyntaxError: Identifier 'value' has already been declared
 ```
@@ -33,7 +33,7 @@ let value = 2; // Uncaught SyntaxError: Identifier 'value' has already been decl
 
 当在全局作用域中使用 var 声明的时候，会创建一个新的全局变量作为全局对象的属性。
 
-```
+```js
 var value = 1;
 console.log(window.value); // 1
 ```
@@ -62,7 +62,7 @@ foo.prop = 123;//常量foo指向一个冻结的对象，所以添加新属性不
 
 let 和 const 声明的变量不会被提升到作用域顶部，如果在声明之前访问这些变量，会导致报错：
 
-```
+```js
 console.log(typeof value); // Uncaught ReferenceError: value is not defined
 let value = 1;
 ```

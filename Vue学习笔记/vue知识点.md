@@ -552,7 +552,8 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
 
 - v-if 和 v-show 区分使用场景
 - computed 和 watch  区分使用场景
-- v-for 遍历必须为 item 添加 key，且避免同时使用 v-if
+- v-for 遍历必须为 item 添加 key
+- 避免同时使用 v-if
 - 长列表性能优化
 - 事件的销毁
 - 图片资源懒加载
@@ -649,13 +650,13 @@ vm.b = 2
 
 1、通过Vue.set方法设置data属性sex，如下：【**Vue.set(object, propertyName, value)**】
 
-```vue
+```js
 Vue.set(data,'sex', '男')
 ```
 
 2、您还可以使用 vm.$set实例方法，这也是全局 Vue.set方法的别名:
 
-```
+```js
 var key = 'content'; //这种主要用于当对象中某个属性值动态生成时处理方式
 this.$set('info.'+key, 'what is this?');
  或
@@ -674,7 +675,7 @@ this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
 - 数组变化也能监听到
 - 不需要深度遍历监听
 
-```
+```js
 let data = { a: 1 }
 let reactiveData = new Proxy(data, {
 	get: function(target, name){

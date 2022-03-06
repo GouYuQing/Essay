@@ -356,7 +356,7 @@ GetValue(fooReference) // 1;
 
 2.判断 ref 是不是一个 Reference 类型
 
-```
+```js
 2.1 如果 ref 是 Reference，并且 IsPropertyReference(ref) 是 true, 那么 this 的值为 GetBase(ref)
 
 2.2 如果 ref 是 Reference，并且 base value 值是 Environment Record, 那么this的值为 ImplicitThisValue(ref)**其实也是undefined**
@@ -387,7 +387,7 @@ var foo = {
     }
 }
 foo.bar(); // MemberExpression 是 foo.bar
-总结如下：所以MemberExpression就是（）左边的部分
+// 总结如下：所以MemberExpression就是（）左边的部分
 ```
 
 ###### （2）判断`MemberExpression`返回的结果是不是`Reference`类型
