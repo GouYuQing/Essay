@@ -471,6 +471,17 @@ module.exports = {
 }
 ```
 
+#### （3）cookies和token都存放在header中，为什么不会劫持token？
+
+token不是为了防止**XSS(跨站脚本攻击)**的，而是为了**防止CSRF(跨站请求伪造)**的；
+
+CSRF攻击的原因是浏览器会自动带上cookie，而不会带上token；
+
+以CSRF攻击为例：
+
+cookie：用户点击了链接，cookie未失效，导致发起请求后后端以为是用户正常操作于是进行扣款操作；
+		token：用户点击链接，由于浏览器不会自动带上token，所以即使发了请求，后端的token验证不会通过，所以不会进行扣款操作；
+
 ### 17.前端安全XSS和CSRF
 
 #### （1）**XSS**：（Cross Site Scripting）跨站脚本攻击

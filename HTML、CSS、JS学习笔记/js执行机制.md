@@ -22,7 +22,7 @@ javascript是一门单线程语言，在最新的HTML5中提出了Web-Worker，�
 
 ## 3.JavaScript宏任务和微任务(异步任务，决定取出的函数顺序)
 
-**macro-task(宏任务)**：包括整体代码script，setTimeout，setInterval
+**macro-task(宏任务)**：包括整体代码script，setTimeout，setInterval、 I/O 操作、UI 渲染等
 
 **micro-task(微任务)**：Promise.then，process.nextTick
 
@@ -178,7 +178,46 @@ setTimeout
 */
 ```
 
-## 5.总结
+## 5.Node的事件循环
+
+Node.js的运行机制如下:
+
+- V8引擎解析JavaScript脚本。
+- 解析后的代码，调用Node API。
+- libuv库负责Node API的执行。它将不同的任务分配给不同的线程，形成一个Event Loop（事件循环），以异步的方式将任务的执行结果返回给V8引擎。
+- V8引擎再将结果返回给用户。
+
+![image-20200502214306197](images/image-20200502214306197-1646662601670.png)
+
+外部输入数据-->轮询阶段(poll)-->检查阶段(check)-->关闭事件回调阶段(close callback)-->定时器检测阶段(timer)-->I/O事件回调阶段(I/O callbacks)-->闲置阶段(idle, prepare)-->轮询阶段（按照该顺序反复运行）
+
+```js
+setTimeout(()=>{
+    console.log('timer1')
+    Promise.resolve().then(function() {
+        console.log('promise1')
+    })
+}, 0)
+setTimeout(()=>{
+    console.log('timer2')
+    Promise.resolve().then(function() {
+        console.log('promise2')
+    })
+}, 0)
+
+/*浏览器端运行结果：timer1=>promise1=>timer2=>promise2*/
+
+/*node端执行结果：如果是node11版本一旦执行一个阶段里的一个宏任务(setTimeout,setInterval和setImmediate)就立刻执行微任务队列，这就跟浏览器端运行一致，最后的结果为timer1=>promise1=>timer2=>promise2*/
+
+/*如果是node10及其之前版本：要看第一个定时器执行完，第二个定时器是否在完成队列中。
+如果是第二个定时器还未在完成队列中，最后的结果为timer1=>promise1=>timer2=>promise2
+如果是第二个定时器已经在完成队列中，则最后的结果为timer1=>timer2=>promise1=>promise2(下文过程解释基于这种情况下)*/
+
+```
+
+
+
+## 6.总结
 
 总体来说就是先执行一个宏任务，再执行所有微任务，一直循环，直到所有事件执行完毕
 

@@ -331,14 +331,72 @@ Fiber 其实可以算是一种编程思想，在其它语言中也有许多应�
 
 `setState`: React 中用于修改状态，更新视图
 
-**异步与同步**: `setState`并不是单纯的异步或同步，这其实与调用时的环境相关
+#### （1）**setState异步与同步**
 
-1.在 **合成事件** 和 **生命周期钩子(除 componentDidUpdate)** 中，`setState`是"异步"的；
+ `setState`并不是单纯的异步或同步，这其实与调用时的环境相关
+
+##### 1.同步情况
+
+**原生事件（js绑定事件）** 和 **setTimeout** 中，`setState`是同步的，可以马上获取更新后的值
+
+##### 2.异步情况
+
+在 **合成事件** 和 **生命周期钩子(除 componentDidUpdate)** 中，`setState`是"异步"的；
 
 - 无法在`setState`后马上从`this.state`上获取更新后的值。
-- **解决**: 如果需要马上同步去获取新值，`setState`其实是可以传入第二个参数的。`setState(updater, callback)`，在回调中即可获取最新值；
+- 解决: 如果需要马上同步去获取新值，`setState`其实是可以传入第二个参数的。`setState(updater, callback)`，在回调中即可获取最新值；
 
-2.**原生事件** 和 **setTimeout** 中，`setState`是同步的，可以马上获取更新后的值
+大部分开发中用到的都是React封装的事件，比如onChange、onClick、onTouchMove等，这些事件处理程序中的setState都是异步处理的。
+
+```js
+constructor() {
+  this.state = {
+    count: 10
+  }
+
+  this.handleClickOne = this.handleClickOne.bind(this)
+  this.handleClickTwo = this.handleClickTwo.bind(this)
+}
+
+render() {
+  return (
+    <button onClick={this.hanldeClickOne}>clickOne</button>
+    <button onClick={this.hanldeClickTwo}>clickTwo</button>
+    <button id="btn">clickTwo</button>
+  )
+}
+
+handleClickOne() {
+  this.setState({ count: this.state.count + 1})
+  console.log(this.state.count)
+}
+```
+
+输出：10 由此可以看出该事件处理程序中的setState是异步更新state的。
+
+```js
+componentDidMount() {
+  document.getElementById('btn').addEventListener('clcik', () => {
+    this.setState({ count: this.state.count + 1})
+    console.log(this.state.count)
+  })
+}
+```
+
+输出： 11
+
+```js
+handleClickTwo() {
+  setTimeout(() => {
+    this.setState({ count: this.state.count + 1})
+    console.log(this.state.count)
+  }, 10)  
+}
+```
+
+输出： 11
+
+以上两种方式绕过React，通过js的事件绑定程序 addEventListener 和使用setTimeout/setInterval 等 React 无法掌控的 APIs情况下，setState是同步更新state。
 
 ### 16.Redux
 

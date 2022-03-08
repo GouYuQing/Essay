@@ -696,3 +696,93 @@ let reactiveData = new Proxy(data, {
 ### 22.Vue项目中props传值、data数据初始化、watch（immediate: true）和常用钩子之间先后关系
 
 beforeCreate > props > data初始化 >computed > watch（顺序不定） > created > beforeMount > mounted
+
+### 23.vuex和redux的设计思想
+
+**把组件之间需要共享的状态抽取出来，遵循特定的约定，统一来管理，让状态的变化可以预测**
+
+#### （1）**Flux**:*View* Action *Dispatcher* Store
+
+![image-20200501172931661](images/image-20200501172931661.png)
+
+View:数据展示，View因为什么事件改变了，就会通知订阅者
+
+Store：数据存放，有state。Store改变那View改变
+
+*Dispatcher 的作用是接收**所有**的 Action，然后发给**所有**的 Store。*
+
+Flux的最大特点就是数据都是**单向流动**的。
+
+#### （2）**Redux:**
+
+![image-20200501173448143](images/image-20200501173448143.png)
+
+Reducer（State 的计算过程）:
+
+Redux 没有 Dispatcher 的概念，Store 里面已经集成了 dispatch 方法。store.dispatch()是 View 发出 Action 的唯一方法。
+
+reducer只能接受state（仓库里面的原始状态），不能改变state
+
+store往reducer
+
+Reducer是个纯函数（函数式编程的概念）：
+
+对于相同的输入，永远都只会有相同的输出，不会影响外部的变量，也不会被外部变量影响，不得改写参数。它的作用大概就是这样，根据应用的状态和当前的 action 推导出新的 state：
+
+```js
+(previousState, action) => newState
+```
+
+**Reducer流程**
+
+1、用户通过 View 发出 Action：
+
+```js
+store.dispatch(action);
+```
+
+2、然后 Store 自动调用 Reducer，并且传入两个参数：当前 State 和收到的 Action。 Reducer 会返回新的 State 。
+
+```text
+let nextState = xxxReducer(previousState, action);
+```
+
+3、State 一旦有变化，Store 就会调用监听函数。
+
+```js
+store.subscribe(listener);//相当于订阅了reducer的状态
+```
+
+4、listener可以通过 store.getState() 得到当前状态。如果使用的是 React，这时可以触发重新渲染 View。
+
+```js
+function listerner() {
+  let newState = store.getState();
+  component.setState(newState);   
+}
+```
+
+Flux是各自为战的，一个store管理一个view，redux是统一管理的，但是两个都是单向数据流
+
+#### （3）**Vuex**
+
+![image-20200501174646888](images/image-20200501174646888.png)
+
+state：存放状态，
+
+mutations：更改state的唯一方法
+
+```js
+ mutations: {
+    increment (state) {
+      // 变更状态
+      state.count++
+    }
+  }
+```
+
+action:View 通过 store.dispatch('increment') 来触发某个 Action，Action 里面不管执行多少异步操作，完事之后都通过 store.commit('increment') 来触发 mutation，一个 Action 里面可以触发多个 mutation。所以 Vuex 的Action 类似于一个灵活好用的中间件。
+
+![image-20200501222748122](images/image-20200501222748122.png)
+
+#
