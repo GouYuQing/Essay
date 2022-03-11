@@ -397,7 +397,7 @@ var app = new Vue({
 
 （3） Model 层
 
-```
+```js
 {
     "url": "/your/server/data/api",
     "res": {
@@ -469,6 +469,8 @@ Data变化更新 View:订阅者 Watcher
 ![image-20211230112027235](images/image-20211230112027235.png)
 
 ##### a.对象响应式
+
+Vue 无法检测 property 的添加或移除。由于 Vue 会在初始化实例时对 property 执行 getter/setter 转化，所以 property 必须在 `data` 对象上存在才能让 Vue 将它转换为响应式的。
 
 见知识点19点，set使用
 

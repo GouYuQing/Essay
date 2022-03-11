@@ -228,7 +228,7 @@ function FiberNode(
 }
 ```
 
-![image-20210220184419275](images\image-20210220184419275.png)
+![image-20210220184419275](images/image-20210220184419275.png)
 
 ### （3）Fiber工作原理
 
@@ -263,15 +263,15 @@ workInProgressFiber.alternate === currentFiber;
 
 （1）mount时
 
-![image-20210220190121175](images\image-20210220190121175.png)
+![image-20210220190121175](images/image-20210220190121175.png)
 
-![image-20210220190131695](images\image-20210220190131695.png)
+![image-20210220190131695](images/image-20210220190131695.png)
 
 （2）update时
 
 如果进行更新，开启一次新的`render阶段`并构建一棵新的`workInProgress Fiber 树`。
 
-![image-20210220190216184](images\image-20210220190216184.png)
+![image-20210220190216184](images/image-20210220190216184.png)
 
 渲染更新完成之后，最后变成current Fiber 树，展示在页面上
 
@@ -431,7 +431,7 @@ function workLoopConcurrent() {
 
 例子：
 
-![image-20210221165038847](images\image-20210221165038847.png)
+![image-20210221165038847](images/image-20210221165038847.png)
 
 ```sh
 1. rootFiber beginWork
@@ -820,7 +820,7 @@ function reconcileChildFibers(
 
 #### 1.单节点：object`、`number`、`string
 
-![image-20210223162818438](images\image-20210223162818438.png)
+![image-20210223162818438](images/image-20210223162818438.png)
 
 ```javascript
  const key = element.key;

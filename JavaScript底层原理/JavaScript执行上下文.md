@@ -26,8 +26,8 @@
 
 对于每个执行上下文，都有三个重要属性：
 
-- **变量对象(Variable object，VO)**
-- **作用域链(Scope chain)**
+- **变量对象(Variable object，VO)**:包含变量、函数声明和函数的形参，该属性只能在全局上下文中访问
+- **作用域链(Scope chain)**:JS 采用词法作用域，也就是说变量的作用域是在定义时就决定了
 - **this**
 
 ### （1）变量对象
@@ -93,7 +93,7 @@ function foo(a) {
 foo(1);
 //进入执行上下文之后，AO为
 AO = {
-    arguments: {
+    arguments: {//// arguments 是函数独有的对象(箭头函数没有),该对象是一个伪数组，有 `length` 属性且可以通过下标访问元素
         0: 1,
         length: 1
     },

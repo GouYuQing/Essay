@@ -511,7 +511,7 @@ Content-Security-Policy: default-src 'self'; img-src *; media-src media1.com med
 
 #### （2）**CSRF**：（Cross Site Request Forgy）跨站请求伪造
 
-![image-20200831165625018](D:\code\jsWorkSpace\notes\Essay\HTML、CSS、JS学习笔记\JS知识点.assets\image-20200831165625018.png)
+![image-20200831165625018](images/image-20200831165625018.png)
 
 （1）用户在a站前端页面发起登录（身份认证）请求
 
