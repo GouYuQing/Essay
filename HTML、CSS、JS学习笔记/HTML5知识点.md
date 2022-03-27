@@ -123,6 +123,10 @@ required、autofocus、pattern正则校验
     pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$" autofocus required>
 ```
 
+### 9.HTML5新的语义元素
+
+header、nav、section、aside、article、footer
+
 ## HTML5.1知识点
 
 ### 1.响应式图片picture

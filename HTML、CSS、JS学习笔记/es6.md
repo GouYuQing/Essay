@@ -1040,7 +1040,7 @@ Object.keys(obj); // ['a','b','c'] 取key值
 Object.entries(obj); // [['a', 1], ['b', 2], ['c', 3]] 取key和value，把对象转换成键值对数组
 Object.values(obj); // [1,2,3] 取value
 
-Object.fromEntries()是entries()的逆向操作
+//Object.fromEntries()是entries()的逆向操作
 Object.fromEntries([['a', 1], ['b', 2], ['c', 3]]);// {a: 1, b: 2, c: 3} 把键值对数组转换成对象
 Object.fromEntries(map);//还可以吧Map转换成对象
 ```
@@ -1424,7 +1424,45 @@ const alsoHuge = BigInt(9007199254740991);
 // 9007199254740991n
 ```
 
-## 26.一些编程小技巧
+## 26.Proxy
+
+Proxy是es6中新增功能，可以用来定义对象中的操作
+
+```js
+let p = new Proxy(target, handler);
+// `target` 代表需要添加代理的对象
+// `handler` 用来自定义对象中的操作
+```
+
+例子：使用Proxy实现数据绑定和监听
+
+```js
+let onWatch = (obj, setBind, getLogger) => {
+  let handler = {
+    get(target, property, receiver) {
+      getLogger(target, property)
+      return Reflect.get(target, property, receiver);
+    },
+    set(target, property, value, receiver) {
+      setBind(value);
+      return Reflect.set(target, property, value);
+    }
+  };
+  return new Proxy(obj, handler);
+};
+
+let obj = { a: 1 }
+let value
+let p = onWatch(obj, (v) => {
+  value = v
+}, (target, property) => {
+  console.log(`Get '${property}' = ${target[property]}`);
+})
+p.a = 2 // bind `value` to `2`
+p.a // -> Get 'a' = 2
+```
+
+## 27.一些编程小技巧
 
 ### (1)**转时间戳**
 
@@ -1489,10 +1527,10 @@ ES7提供了求幂运算符：`**`
 const num = 3 ** 2 // 9
 ```
 
-## 27.参考资料
+## 28.参考资料
 
 ### （1）es6入门教程
 
 ### （2）[推荐文章：你会用ES6，那倒是用啊！](https://juejin.cn/post/7016520448204603423)
 
-（3）[es6-es12开发技巧](https://juejin.cn/post/6995334897065787422#heading-8)
+### （3）[es6-es12开发技巧](https://juejin.cn/post/6995334897065787422#heading-8)

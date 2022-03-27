@@ -71,7 +71,7 @@ B.prototype.__proto__ === A.prototype // true
 
 ES6的继承实现在于使用super关键字调用父类，反观ES5是通过call或者apply回调方法调用父类。
 
-### 2.npm安装机制，为什么npm install就可以安装对应的模块
+###  2.npm安装机制，为什么npm install就可以安装对应的模块
 
 （1）发出`npm install`命令
 
@@ -355,3 +355,269 @@ new (Foo.getName());
 (new Foo()).getName();
 ```
 
+### 14.为什么0.1+0.2！=0.3
+
+因为 JS 采用 IEEE 754 双精度版本（64位），并且只要采用 IEEE 754 的语言都有该问题。
+
+解决办法
+
+```js
+parseFloat((0.1 + 0.2).toFixed(10))
+```
+
+### 15.正则表达式
+
+#### （1）元字符
+
+| 元字符 |                             作用                             |
+| :----: | :----------------------------------------------------------: |
+|   .    |                匹配任意字符除了换行符和回车符                |
+|   []   |  匹配方括号内的任意字符。比如 [0-9] 就可以用来匹配任意数字   |
+|   ^    | ^9，这样使用代表匹配以 9 开头。[`^`9]，这样使用代表不匹配方括号内除了 9 的字符 |
+| {1, 2} |                      匹配 1 到 2 位字符                      |
+| (yck)  |                   只匹配和 yck 相同字符串                    |
+|   \|   |                     匹配 \| 前后任意字符                     |
+|   \    |                             转义                             |
+|   *    |               只匹配出现 0 次及以上 * 前的字符               |
+|   +    |               只匹配出现 1 次及以上 + 前的字符               |
+|   ?    |                        ? 之前字符可选                        |
+
+#### （2）修饰语
+
+| 修饰语 |    作用    |
+| :----: | :--------: |
+|   i    | 忽略大小写 |
+|   g    |  全局搜索  |
+|   m    |    多行    |
+
+#### （3）字符简写
+
+| 简写 |         作用         |
+| :--: | :------------------: |
+|  \w  | 匹配字母数字或下划线 |
+|  \W  |      和上面相反      |
+|  \s  |   匹配任意的空白符   |
+|  \S  |      和上面相反      |
+|  \d  |       匹配数字       |
+|  \D  |      和上面相反      |
+|  \b  | 匹配单词的开始或结束 |
+|  \B  |      和上面相反      |
+
+### 16.V8下的垃圾回收机制
+
+V8 实现了准确式 GC，GC 算法采用了**分代式垃圾回收机制**。因此，V8 将内存（堆）分为新生代和老生代两部分。
+
+#### （1）新生代算法
+
+新生代中的对象一般存活时间较短，使用 Scavenge GC 算法
+
+在新生代空间中，内存空间分为两部分，分别为 From 空间和 To 空间。在这两个空间中，必定有一个空间是使用的，另一个空间是空闲的。新分配的对象会被放入 From 空间中，当 From 空间被占满时，新生代 GC 就会启动了。算法会检查 From 空间中存活的对象并复制到 To 空间中，如果有失活的对象就会销毁。当复制完成后将 From 空间和 To 空间互换，这样 GC 就结束了。
+
+#### （2）老生代算法
+
+老生代中的对象一般存活时间较长且数量也多，使用了两个算法，分别是标记清除算法和标记压缩算法。
+
+什么情况下对象会出现在老生代算法空间中：
+
+- 新生代中的对象是否已经经历过一次 Scavenge 算法，如果经历过的话，会将对象从新生代空间移到老生代空间中。
+- To 空间的对象占比大小超过 25 %。在这种情况下，为了不影响到内存分配，会将对象从新生代空间移到老生代空间中。
+
+在老生代中，以下情况会先启动标记清除算法：
+
+- 某一个空间没有分块的时候
+- 空间中被对象超过一定限制
+- 空间不能保证新生代中的对象移动到老生代中
+
+在这个阶段中，会遍历堆中所有的对象，然后标记活的对象，在标记完成后，销毁所有没有被标记的对象。
+
+### 17.Service Worker
+
+Service workers 本质上充当 Web 应用程序与浏览器之间的代理服务器，也可以在网络可用时作为浏览器和网络间的代理。它们旨在（除其他之外）使得能够创建有效的离线体验，拦截网络请求并基于网络是否可用以及更新的资源是否驻留在服务器上来采取适当的动作。他们还允许访问推送通知和后台同步 API。
+
+通常用来做缓存文件，提高首屏速度
+
+```js
+// index.js
+if (navigator.serviceWorker) {
+  navigator.serviceWorker
+    .register('sw.js')
+    .then(function(registration) {
+      console.log('service worker 注册成功')
+    })
+    .catch(function(err) {
+      console.log('servcie worker 注册失败')
+    })
+}
+// sw.js
+// 监听 `install` 事件，回调中缓存所需文件
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open('my-cache').then(function(cache) {
+      return cache.addAll(['./index.html', './index.js'])
+    })
+  )
+})
+
+// 拦截所有请求事件
+// 如果缓存中已经有请求的数据就直接用缓存，否则去请求数据
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(function(response) {
+      if (response) {
+        return response
+      }
+      console.log('fetch source')
+    })
+  )
+})
+```
+
+打开页面，可以在开发者工具中的 `Application` 看到 Service Worker 已经启动了
+
+在 Cache 中也可以发现我们所需的文件已被缓存
+
+当我们重新刷新页面可以发现我们缓存的数据是从 Service Worker 中读取的
+
+### 18.Load和DOMContentLoaded区别
+
+Load 事件触发代表页面中的 DOM，CSS，JS，图片已经全部加载完毕。
+
+DOMContentLoaded 事件触发代表初始的 HTML 被完全加载和解析，不需要等待 CSS，JS，图片加载
+
+### 19.减少重绘和回流
+
+#### （1）使用 `translate` 替代 `top`
+
+```html
+<div class="test"></div>
+<style>
+  .test {
+    position: absolute;
+    top: 10px;
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+</style>
+<script>
+  setTimeout(() => {
+    // 引起回流
+    document.querySelector('.test').style.top = '100px'
+  }, 1000)
+</script>
+```
+
+#### （2）使用 `visibility` 替换 `display: none`
+
+前者只会引起重绘，后者会引发回流（改变了布局）
+
+#### （3）把 DOM 离线后修改
+
+比如：先把 DOM 给 `display:none` (有一次 Reflow)，然后你修改 100 次，然后再把它显示出来
+
+#### （4）不要把 DOM 结点的属性值放在一个循环里当成循环里的变量
+
+```js
+for (let i = 0; i < 1000; i++) {
+  // 获取 offsetTop 会导致回流，因为需要去获取正确的值
+  console.log(document.querySelector('.test').style.offsetTop)
+}
+```
+
+#### （5）不要使用 table 布局
+
+可能很小的一个小改动会造成整个 table 的重新布局
+
+#### （6）动画实现的速度的选择
+
+动画速度越快，回流次数越多，也可以选择使用 `requestAnimationFrame`
+
+### 20.如何渲染几万条数据不卡住页面
+
+不能一次性将几万条都渲染出来，而应该一次渲染部分 DOM，那么就可以通过 `requestAnimationFrame` 来每 16 ms 刷新一次。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <ul>
+      控件
+    </ul>
+    <script>
+      setTimeout(() => {
+        // 插入十万条数据
+        const total = 100000
+        // 一次插入 20 条，如果觉得性能不好就减少
+        const once = 20
+        // 渲染数据总共需要几次
+        const loopCount = total / once
+        let countOfRender = 0
+        let ul = document.querySelector('ul')
+        function add() {
+          // 优化性能，插入不会造成回流
+          const fragment = document.createDocumentFragment()
+          for (let i = 0; i < once; i++) {
+            const li = document.createElement('li')
+            li.innerText = Math.floor(Math.random() * total)
+            fragment.appendChild(li)
+          }
+          ul.appendChild(fragment)
+          countOfRender += 1
+          loop()
+        }
+        function loop() {
+          if (countOfRender < loopCount) {
+            window.requestAnimationFrame(add)
+          }
+        }
+        loop()
+      }, 0)
+    </script>
+  </body>
+</html>
+```
+
+### 21.Node与Element，Children与Childnodes的区别
+
+#### Node和Element区别
+
+**Element继承了Node类，也就是说Element是Node多种类型中的一种，**即当NodeType为1时Node即为ElementNode，另外Element扩展了Node，Element拥有id、class、children等属性。
+
+用document.getElementById("xxx")取到的是Node还是Element？
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Demo</title>
+</head>
+<body>
+    <div id="test">
+        <p>One</p>
+        <P>Two</p>
+    </div>
+    <script>
+        var oDiv=document.getElementById("test");
+        console.log(oDiv instanceof Node);        //true
+        console.log(oDiv instanceof Element);    //true
+    </script>
+</body>
+</html>
+```
+
+**用document.getElementById("xxx")取到的既是Element也是Node**
+
+#### （2）**children属性与childNodes属性的差别**
+
+childNodes属性返回所有的节点，（包括元素节点、属性节点、文本节点），通过nodeType来判断，nodeType = == 1是元素节点，nodeType== =2是属性节点，nodeType === 3是文本节点；
+
+children属性只返回元素节点；
+
+**children是Element的属性，childNodes是Node的属性**

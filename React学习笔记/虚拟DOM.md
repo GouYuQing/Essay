@@ -1,4 +1,4 @@
-## Virtual DOM 
+## Virtual DOM
 
 ### 1.DOM概念
 

@@ -110,7 +110,7 @@ return function(...args){
 
 1. 参数复用，减少重复参数
 
-   ```
+   ```js
    // (1)减少重复参数
    function simpleURL(protocol, domain, path) {
      return `${protocol}://${domain}/${path}`
@@ -145,7 +145,7 @@ return function(...args){
 
 ### （3）柯里化实现（如下代码所示）
 
-```
+```js
 const curry = (fn, arr = []) => (...args) => (
   arg => arg.length === fn.length ? fn(...arg): curry(fn, arg)
 )([...arr, ...args])
