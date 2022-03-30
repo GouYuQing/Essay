@@ -8,19 +8,21 @@
 
 2.[vue 知识点](./Vue学习笔记/vue知识点.md)
 
+3.[vue router 源码解析](./Vue学习笔记/VueRouter源码解析.md)
+
 ## React 学习笔记
 
 1.[Virtual DOM](./React学习笔记/虚拟DOM.md)
 
-2.[react源码学习](./React学习笔记/react技术揭秘.md)（未完成）
+2.[react 源码学习](./React学习笔记/react技术揭秘.md)（未完成）
 
-3.[react知识点](./React学习笔记/react知识点.md)
+3.[react 知识点](./React学习笔记/react知识点.md)
 
 ## 服务器部署
 
 1.[Docker 入门到项目实战](./服务器部署/Docker文档整理.md)
 
-2.[GitLab CI入门到实践](./服务器部署/GitLabCI文档整理.md)
+2.[GitLab CI 入门到实践](./服务器部署/GitLabCI文档整理.md)
 
 ## 函数式编程
 
@@ -34,11 +36,11 @@
 
 ### 小知识点[不断更新]
 
-1.[CSS 知识点](./HTML、CSS、JS学习笔记/CSS知识点(一).md)
+1.[CSS 知识点](<./HTML、CSS、JS学习笔记/CSS知识点(一).md>)
 
 2.[HTML 知识点](./HTML、CSS、JS学习笔记/HTML知识点.md)
 
-3.[JS知识点（一）](./HTML、CSS、JS学习笔记/JS知识点(一).md)
+3.[JS 知识点（一）](<./HTML、CSS、JS学习笔记/JS知识点(一).md>)
 
 4.[前端优化](./HTML、CSS、JS学习笔记/前端优化.md)
 
@@ -54,7 +56,7 @@
 
 3.[HTML 一些知识点](./HTML、CSS、JS学习笔记/CSS层叠上下文.md)
 
-## JS底层原理
+## JS 底层原理
 
 1.[词法作用域和动态作用域](./JavaScript底层原理/词法作用域和动态作用域.md)
 
@@ -66,7 +68,7 @@
 
 5.[参数按值传递](./JavaScript底层原理/JavaScript参数按值传递.md)
 
-5.[this及this指向](./JavaScript底层原理/this.md)
+5.[this 及 this 指向](./JavaScript底层原理/this.md)
 
 ## 计算机网络
 
