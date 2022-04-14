@@ -70,6 +70,10 @@
 
 5.[this 及 this 指向](./JavaScript底层原理/this.md)
 
+## TypeScript
+
+1.[TypeScript 入门](./TypeScript/TypeScript.md)
+
 ## 计算机网络
 
 1.[跨域的原理](./计算机网络/跨域的原理.md)
