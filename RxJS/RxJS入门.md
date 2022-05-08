@@ -90,7 +90,182 @@ foo.subscribe(function (x) {
 console.log('after');
 ```
 
-## 4.Observable解析
+## 4.Observable
+
+表示一个概念，这个概念是一个可调用的未来值或事件的集合。它能被多个`observer`订阅，每个订阅关系相互独立、互不影响。
+
+![image-20220508175947531](images/image-20220508175947531.png)
+
+**Observable是一个数据源，用来产生数据的数据源**
+
+```js
+const Rx = require('rxjs/Rx')
+const myObservable = Rx.Observable.create(observer => {
+  observer.next('foo');
+  setTimeout(() => observer.next('bar'), 1000);
+});
+//调用Observable.create方法来创建一个Observable
+```
+
+## 5.Observer
+
+一个回调函数的集合，它知道如何去监听由`Observable`提供的值。`Observer`在信号流中是一个观察者（哨兵）的角色，它负责观察任务执行的状态并向流中发射信号。
+
+![image-20220508181017053](images/image-20220508181017053.png)
+
+在`RxJS`中，`Observer`是可选的。在`next`、`error` 和 `complete`处理逻辑部分缺失的情况下，`Observable`仍然能正常运行，未包含的特定通知类型的处理逻辑会被自动忽略
+
+```js
+const myObservable = Rx.Observable.create((observer) => {
+    observer.next('111')
+    setTimeout(() => {
+        observer.next('777')
+    }, 3000)
+})
+myObservable.subscribe((text) => console.log(text));
+```
+
+直接使用`subscribe`方法让一个`observer`订阅一个`Observable`，我们可以看看这个`subscribe`的函数定义来看看怎么实现订阅的：
+
+```ts
+subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription;
+复制代码
+```
+
+从入参来看，从左至右依次是`next`、`error`，`complete`，且是可选的，我们可以自己选择性的传入相关回调，从这里也就印证了我们上面所说`next`、`error` 和 `complete`处理逻辑部分缺失的情况下仍可以正常运行，因为他们都是可选的。
+
+## 6.Subscription与Subject
+
+### （1）Subscription
+
+`Subscription`就是表示`Observable`的执行，可以被清理。这个对象最常用的方法就是`unsubscribe`方法，它不需要任何参数，只是用来清理由`Subscription`占用的资源。同时，它还有`add`方法可以使我们取消多个订阅
+
+```js
+const myObservable = Rx.Observable.create(observer => {
+  observer.next('foo');
+  setTimeout(() => observer.next('bar'), 1000);
+});
+const subscription = myObservable.subscribe(x => console.log(x));
+// 稍后：
+// 这会取消正在进行中的 Observable 执行
+// Observable 执行是通过使用观察者调用 subscribe 方法启动的
+subscription.unsubscribe();
+```
+
+### （2）Subject(主体)
+
+它是一个代理对象，既是一个 `Observable` 又是一个 `Observer`，它可以同时接受 `Observable` 发射出的数据，也可以向订阅了它的 `observer` 发射数据，同时，`Subject` 会对内部的 `observers` 清单进行多播(`multicast`)
+
+![image-20220508183708577](images/image-20220508183708577.png)
+
+**`Subjects` 是将任意 `Observable` 执行共享给多个观察者的唯一方式**
+
+**相当于 多播**
+
+![image-20220508185403580](images/image-20220508185403580.png)
+
+#### a.单播
+
+每个普通的 `Observables` 实例都只能被一个观察者订阅，当它被其他观察者订阅的时候会产生一个新的实例。也就是普通 `Observables` 被不同的观察者订阅的时候，会有多个实例，不管观察者是从何时开始订阅，每个实例都是从头开始把值发给对应的观察者。
+
+```js
+const Rx = require('rxjs/Rx')
+const source = Rx.Observable.interval(1000).take(3);//每隔一秒发送一个从0开始递增整数的Observable
+source.subscribe((value) => console.log('A ' + value))
+setTimeout(() => {
+    source.subscribe((value) => console.log('B ' + value))
+}, 1000)
+// A 0
+// A 1
+// B 0
+// A 2
+// B 1
+// B 2
+//每次创建都是新的实例，所以就需要取消
+```
+
+#### b.多播
+
+不论什么时候订阅只会接收到实时的数据的功能
+
+```js
+const source = Rx.Observable.interval(1000).take(3);
+const subject = {
+	observers: [],
+	subscribe(target) {
+		this.observers.push(target);
+	},
+	next: function(value) {
+		this.observers.forEach((next) => next(value))
+	}
+}
+source.subscribe(subject);
+subject.subscribe((value) => console.log('A ' + value))
+setTimeout(() => {
+	subject.subscribe((value) => console.log('B ' + value))
+}, 1000)
+
+// A 0
+// A 1
+// B 1
+// A 2
+// B 2
+//订阅的对象由source变成了subject,subject移除了error、complete这样的处理函数，只保留了next,然后内部含有一个observers数组，这里包含了所有的订阅者，暴露一个subscribe用于观察者对其进行订阅
+```
+
+在使用过程中，让这个中间商`subject`来订阅`source`，这样便做到了统一管理，以及保证数据的实时性，因为本质上对于`source`来说只有一个订阅者。
+
+#### c.自动控制数据发送
+
+```js
+const source = Rx.Observable.interval(1000).take(3).publish().refCount();
+setTimeout(() => {
+	source.subscribe(data => { console.log("A：" + data) });
+	setTimeout(() => {
+		source.subscribe(data => { console.log("B：" + data) });
+	}, 1000);
+}, 2000);
+
+// A：0
+// A：1
+// B：1
+// A：2
+// B：2
+```
+
+只有当`A`订阅的时候才开始发送数据（`A`拿到的数据是从0开始的），并且当`B`订阅时，也是只能获取到当前发送的数据，而不能获取到之前的数据。
+
+当所有订阅者都取消订阅的时候它就会停止再发送数据了
+
+## 7.Schedulers(调度器)
+
+`Schedulers`来控制数据发送的时机,所以我们不需要进行特殊处理他们就能良好的进行同步或异步运行。
+
+```js
+const source = Rx.Observable.create(function (observer: any) {
+    observer.next(1);
+    observer.next(2);
+    observer.next(3);
+    observer.complete();
+});
+console.log('订阅前');
+source.observeOn(Rx.Scheduler.async) // 设为 async
+.subscribe({
+    next: (value) => { console.log(value); },
+    error: (err) => { console.log('Error: ' + err); },
+    complete: () => { console.log('complete'); }
+});
+console.log('订阅后');
+// 订阅前
+// 订阅后
+// 1
+// 2
+// 3
+// complete
+//数据的发送时机的确已经由同步变成了异步，如果不进行调度方式修改，那么“订阅后”的打印应该是在数据发送完毕之后才会执行的。
+```
+
+## 8.Observable详解
 
 Observable 的核心关注点：
 
@@ -99,7 +274,7 @@ Observable 的核心关注点：
 - **执行** Observables
 - **清理** Observables
 
-### （1）创建Observable 
+### （1）创建Observable
 
 Observables 可以使用 `create` 来创建, 但通常我们使用所谓的[创建操作符](https://cn.rx.js.org/manual/overview.html#creation-operators), 像 `of`、`from`、`interval`、等等
 
@@ -145,7 +320,13 @@ var observable = Rx.Observable.create(function subscribe(observer) {
 
 调用 `unsubscribe()` 方法就可以取消执行
 
-## 4.常用操作符
+## 9.常用操作符
+
+采用函数式编程风格的纯函数 (`pure function`)，使用像 `map`、`filter`、`concat`、`flatMap` 等这样的操作符来处理集合。也正因为他的纯函数定义，所以我们可以知道调用任意的操作符时都不会改变已存在的`Observable`实例，而是会在原有的基础上返回一个新的`Observable`。
+
+![image-20220508214803461](images/image-20220508214803461.png)
+
+相当于一个filter操作
 
 | 类别 | 操作                                                         |
 | :--- | :----------------------------------------------------------- |
@@ -156,7 +337,7 @@ var observable = Rx.Observable.create(function subscribe(observer) {
 | 工具 | `tap`                                                        |
 | 多播 | `share`                                                      |
 
-## 5.错误处理
+## 10.错误处理
 
 除了可以在订阅时提供 `error()` 处理器外，RxJS 还提供了 `catchError` 操作符，它允许你在管道中处理已知错误
 
@@ -183,7 +364,7 @@ apiData.subscribe({
 });
 ```
 
-## 6.angular中的可观察对象
+## 11.angular中的可观察对象
 
 angular使用可观察对象作为处理各种异步接口的操作
 
@@ -358,9 +539,11 @@ ajax('/api/endpoint')
   .subscribe(function handleData(data) { /* ... */ });
 ```
 
-## 9.参考资料
+## 12.参考资料
 
 （1）[RxJS中文文档](https://cn.rx.js.org/manual/overview.html)
 
 （2）[Angular中RxJS基本使用](https://angular.cn/guide/observables)
+
+（3）[RxJS-给你如丝一般顺滑的编程体验](https://juejin.cn/post/6910943445569765384)
 
