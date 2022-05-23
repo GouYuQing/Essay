@@ -42,7 +42,10 @@ let name: string = "bob";
 ### （4）数组定义
 
 ```js
+let 变量: 类型[] = [值1，...]:
 let list: number[] = [1, 2, 3];
+
+let 变量: Array<类型> = [值1，...]
 let list: Array<number> = [1, 2, 3];
 ```
 
@@ -136,7 +139,7 @@ function hello(name: string):void{}
 
 ### （11）Symbol
 
-Symbols是不可改变且唯一的
+Symbols是不可改变且唯一的，
 
 ```js
 let sym2 = Symbol("key");
@@ -198,7 +201,7 @@ function print(pt: {name: string,age: number}){
 ### （3）联合类型
 
 ```js
-function printID(id:number|string){}
+function printID(id:number|string){}//可以是两种类型中的一种
 ```
 
 ### （4）never类型
@@ -243,7 +246,6 @@ objectCase = true; // error
 objectCase = null; // error
 objectCase = undefined; // error
 objectCase = {}; // ok
-复制代码
 ```
 
 **大 Object** 代表所有拥有 toString、hasOwnProperty 方法的类型 所以所有原始类型、非原始类型都可以赋给 Object(严格模式下 `null` 和 `undefined` 不可以)
@@ -256,7 +258,6 @@ ObjectCase = true; // ok
 ObjectCase = null; // error
 ObjectCase = undefined; // error
 ObjectCase = {}; // ok
-复制代码
 ```
 
 **{}** 空对象类型和大 Object 一样 也是表示原始类型和非原始类型的集合
@@ -697,6 +698,8 @@ let flag3: Flag2 = {
 function identity<T>(arg: T): T {
     return arg;
 }
+// 调用identity时传入name，函数会自动推导出泛型T为string，自然arg类型为T，返回值类型也为T
+const userName = identity('name');
 ```
 
 ### （1）多个类型参数
@@ -727,6 +730,7 @@ interface Lengthwise {
   length: number;
 }
 //泛型里面使用extends代表泛型约束 和继承不同了
+//利用 extends 关键字在声明泛型时约束泛型需要满足的条件 这样参数传递的时候就可以进行提示了
 function loggingIdentity<T extends Lengthwise>(arg: T): T {
   console.log(arg.length);
   return arg;
@@ -1151,6 +1155,11 @@ function getProperty<T, K extends keyof T>(o: T, name: K): T[K] {
 }
 ```
 
+```js
+type Keys = keyof any
+// Keys 类型为 string | number | symbol 组成的联合类型,因为any可以是任何类型
+```
+
 
 
 ### （2）索引操作访问符[]
@@ -1206,6 +1215,23 @@ for (let pet in pets) {
 }
 for (let pet of pets) {
     console.log(pet); // "Cat", "Dog", "Hamster"
+}
+```
+
+### （5）is关键字
+
+```js
+// 通常我们使用 is 关键字（类型谓词）在函数的返回值中，从而对于函数传入的参数进行类型保护。
+function isNumber(arg: any): arg is number {
+  return typeof arg === 'number'
+}
+
+function getTypeByVal(val:any) {
+  if (isNumber(val)) {
+    // 此时由于isNumber函数返回值根据类型谓词的保护
+    // 所以可以断定如果 isNumber 返回true 那么传入的参数 val 一定是 number 类型
+    val.toFixed()
+  }
 }
 ```
 
