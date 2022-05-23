@@ -336,7 +336,7 @@ docker-push:// 部署到远程私有仓库
 
 在新的 WIN10 机器上安装带有 shell 执行器（即 powershell）的 gitlab-runner 并启动 CI 构建会引发以下错误
 
-![image-20211101152329778](../../images/image-20211101152329778-1636508644128.png)
+![image-20211101152329778](images/image-20211101152329778.png)
 
 修改config.toml文件
 
