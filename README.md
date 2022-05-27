@@ -82,6 +82,10 @@
 
 1.[TypeScript 入门](./TypeScript/TypeScript.md)
 
+### ts一些小技巧
+
+1.[扩展枚举](./TypeScript/扩展枚举.md)
+
 ## 计算机网络
 
 1.[跨域的原理](./计算机网络/跨域的原理.md)
