@@ -50,11 +50,13 @@
 
 3.[JS 知识点（一）](<./HTML、CSS、JS学习笔记/JS知识点(一).md>)
 
-4.[前端优化](./HTML、CSS、JS学习笔记/前端优化.md)
+4.[JS 知识点（二）](<./HTML、CSS、JS学习笔记/JS知识点(二).md>)
 
 5.[CSS3 知识点](./HTML、CSS、JS学习笔记/CSS3知识点.md)
 
 6.[HTML5 知识点](./HTML、CSS、JS学习笔记/HTML5知识点.md)
+
+7.[前端优化](./HTML、CSS、JS学习笔记/前端优化.md)
 
 ### 其他
 
@@ -62,7 +64,7 @@
 
 2.[JS 执行机制](./HTML、CSS、JS学习笔记/js执行机制.md)
 
-3.[HTML 一些知识点](./HTML、CSS、JS学习笔记/CSS层叠上下文.md)
+3.[CSS层叠上下文](./HTML、CSS、JS学习笔记/CSS层叠上下文.md)
 
 ## JS 底层原理
 
@@ -76,7 +78,9 @@
 
 5.[参数按值传递](./JavaScript底层原理/JavaScript参数按值传递.md)
 
-5.[this 及 this 指向](./JavaScript底层原理/this.md)
+6.[this 及 this 指向](./JavaScript底层原理/this.md)
+
+7.[JavaScript类数组对象与arguments](./JavaScript底层原理/JavaScript类数组对象与arguments.md)
 
 ## TypeScript
 
