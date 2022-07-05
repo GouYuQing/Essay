@@ -110,13 +110,15 @@
 
 1.[Element UI 自定义表格多选框不响应问题](./问题解决/ElementUI自定义表格插槽不响应问题.md)
 
-2.[git add .产生的错误](./问题解决/git添加出错.md)
+2.[git add .产生的错误](./问题解决/git添加出错
 
 ## 工具类
 
 1.[VsCode 使用 ESlint+Prettier 进行代码自动格式化](./工具类/VsCode代码格式化配置.md)
 
 2.[git操作](./工具类/git.md)
+
+3.[package.json中的scripts命令解析](./工具类/package.json中的scripts命令解析.md)
 
 ## 一些博客和好用的文档整理
 
