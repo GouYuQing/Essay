@@ -49,7 +49,7 @@ console.log(str.length) // 3
 console.log(str[0]) // a
 ```
 
-### 4.一些类对象的属性
+### 4.一些类数组对象的属性
 
 #### （1）length属性
 

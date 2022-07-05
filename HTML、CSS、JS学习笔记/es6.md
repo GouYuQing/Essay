@@ -1462,7 +1462,134 @@ p.a = 2 // bind `value` to `2`
 p.a // -> Get 'a' = 2
 ```
 
-## 27.一些编程小技巧
+## 27.Reflect
+
+（1）将Object对象的一些明显属于语言内部的方法(比如Object.defineProperty)，放到Reflect对象上，那么以后我们就可以从Reflect对象上可以拿到语言内部的方法。
+
+（2）在使用对象的 Object.defineProperty(obj, name, {})时，如果出现异常的话，会抛出一个错误，需要使用try catch去捕获，但是使用 Reflect.defineProperty(obj, name, desc) 则会返回false。
+
+```js
+// 老写法
+try {
+  Object.defineProperty(target, property, attributes);
+  // success
+} catch (e) {
+  // failure
+}
+// 新写法
+if (Reflect.defineProperty(target, property, attributes)) {
+  // success
+} else {
+  // failure
+}
+```
+
+（3） 让`Object`操作都变成函数行为。某些`Object`操作是命令式，比如`name in obj`和`delete obj[name]`，而`Reflect.has(obj, name)`和`Reflect.deleteProperty(obj, name)`让它们变成了函数行为
+
+```js
+// 老写法
+'assign' in Object // true
+// 新写法
+Reflect.has(Object, 'assign') // true
+```
+
+静态方法
+
+### （1）**Reflect.get(target, name, receiver)**
+
+`Reflect.get`方法查找并返回`target`对象的`name`属性，如果没有该属性，则返回`undefined`。
+
+```js
+var myObject = {
+  foo: 1,
+  bar: 2,
+  get baz() {
+    return this.foo + this.bar;
+  },
+}
+
+Reflect.get(myObject, 'foo') // 1
+Reflect.get(myObject, 'bar') // 2
+Reflect.get(myObject, 'baz') // 3
+```
+
+如果第一个参数不是对象就会报错
+
+### （2）Reflect.set(target, name, value, recevier)
+
+`Reflect.set`方法设置`target`对象的`name`属性等于`value`。
+
+```js
+var myObject = {
+  foo: 1,
+  set bar(value) {
+    return this.foo = value;
+  },
+}
+myObject.foo // 1
+Reflect.set(myObject, 'foo', 2);
+myObject.foo // 2
+Reflect.set(myObject, 'bar', 3)
+myObject.foo // 3
+```
+
+### (3)Reflect.has(obj,name)
+
+`Reflect.has`方法对应`name in obj`里面的`in`运算符。
+
+```js
+var myObject = {
+  foo: 1,
+};
+// 旧写法
+'foo' in myObject // true
+// 新写法
+Reflect.has(myObject, 'foo') // true
+```
+
+### (4)Reflect.deleteProperty(obj, name)
+
+`Reflect.deleteProperty`方法等同于`delete obj[name]`，用于删除对象的属性。
+
+```js
+const myObj = { foo: 'bar' };
+
+// 旧写法
+delete myObj.foo;
+
+// 新写法
+Reflect.deleteProperty(myObj, 'foo');//true
+```
+
+### (5)Reflect.construct(target, args)
+
+`Reflect.construct`方法等同于`new target(...args)`，这提供了一种不使用`new`，来调用构造函数的方法。
+
+```js
+function Greeting(name) {
+  this.name = name;
+}
+
+// new 的写法
+const instance = new Greeting('张三');
+
+// Reflect.construct 的写法
+const instance = Reflect.construct(Greeting, ['张三']);
+```
+
+### （6）Reflect.getPrototypeOf(obj)
+
+`Reflect.getPrototypeOf`方法用于读取对象的`__proto__`属性，对应`Object.getPrototypeOf(obj)`。
+
+```js
+const myObj = new FancyThing();
+// 旧写法
+Object.getPrototypeOf(myObj) === FancyThing.prototype;
+// 新写法
+Reflect.getPrototypeOf(myObj) === FancyThing.prototype;
+```
+
+## 28.一些编程小技巧
 
 ### (1)**转时间戳**
 
@@ -1527,7 +1654,7 @@ ES7提供了求幂运算符：`**`
 const num = 3 ** 2 // 9
 ```
 
-## 28.参考资料
+## 29.参考资料
 
 ### （1）es6入门教程
 

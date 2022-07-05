@@ -129,7 +129,6 @@ myObservable.subscribe((text) => console.log(text));
 
 ```ts
 subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription;
-复制代码
 ```
 
 从入参来看，从左至右依次是`next`、`error`，`complete`，且是可选的，我们可以自己选择性的传入相关回调，从这里也就印证了我们上面所说`next`、`error` 和 `complete`处理逻辑部分缺失的情况下仍可以正常运行，因为他们都是可选的。
