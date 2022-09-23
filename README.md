@@ -82,6 +82,8 @@
 
 7.[JavaScript类数组对象与arguments](./JavaScript底层原理/JavaScript类数组对象与arguments.md)
 
+8.[0.1+0.2===0.3？](./JavaScript底层原理/0.1+0.2=0.3？.md)
+
 ## TypeScript
 
 1.[TypeScript 入门](./TypeScript/TypeScript.md)
@@ -106,11 +108,15 @@
 
 2.[Dart 学习](./Flutter学习笔记/Dart学习.md)
 
+## 数据结构及算法
+
+1.[v8的排序](./数据结构和算法/v8排序.md)
+
 ## 问题解决
 
 1.[Element UI 自定义表格多选框不响应问题](./问题解决/ElementUI自定义表格插槽不响应问题.md)
 
-2.[git add .产生的错误](./问题解决/git添加出错
+2.[git add .产生的错误](./问题解决/git添加出错)
 
 ## 工具类
 
