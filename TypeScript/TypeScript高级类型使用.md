@@ -179,8 +179,6 @@ type Keys = keyof any
 // Keys 类型为 string | number | symbol 组成的联合类型,因为any可以是任何类型
 ```
 
-
-
 ```ts
 //假如要获取一个对象的value，传入这个对象和key值，获取到value
 //普通方法写
